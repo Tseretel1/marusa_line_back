@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\marusa_line.props" />
+</Project>
