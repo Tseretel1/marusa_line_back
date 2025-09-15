@@ -1,4 +1,5 @@
 ﻿using marusa_line.Controllers.interfaces;
+using marusa_line.Controllers.NewFolder;
 using marusa_line.Controllers.services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +37,45 @@ namespace marusa_line.Controllers
             }
         }
 
+        [HttpGet("get-most-discounted-posts")]
+        public async Task<IActionResult> GetMostDiscountedPosts()
+        {
+            try
+            {
+                var posts = await _postService.GetMostDiscountedPosts();
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get-post-with-id")]
+        public async Task<IActionResult> GetPostWitId(int id)
+        {
+            try
+            {
+                var posts = await _postService.GetPostWithId(id);
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet("get-all-photos")]
         public async Task<IActionResult> GetAllPhotos()
         {
@@ -75,6 +115,45 @@ namespace marusa_line.Controllers
             }
         }
 
-
+        [HttpPost("add-post")]
+        public async Task<IActionResult> InsertPostAsync([FromBody] InsertPostDto dto)
+        {
+            try
+            {
+                var posts = await _postService.InsertPostAsync(dto);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("edit-post")]
+        public async Task<IActionResult> EditPostAsync([FromBody] InsertPostDto dto)
+        {
+            try
+            {
+                var posts = await _postService.EditPostAsync(dto);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("delete-photo")]
+        public async Task<IActionResult> deletePhoto(int photoId)
+        {
+            try
+            {
+                var posts = await _postService.deletePhoto(photoId);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
     }
 }
