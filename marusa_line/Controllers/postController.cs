@@ -1,6 +1,6 @@
-﻿using marusa_line.Controllers.interfaces;
-using marusa_line.Controllers.NewFolder;
-using marusa_line.Controllers.services;
+﻿using marusa_line.interfaces;
+using marusa_line.Dtos;
+using marusa_line.services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace marusa_line.Controllers
@@ -95,6 +95,27 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("get-product-types")]
+        public async Task<IActionResult> GetProductTypes()
+        {
+            try
+            {
+                var posts = await _postService.GetProductTypes();
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("like-post")]
         public async Task<IActionResult> LikePost()
         {

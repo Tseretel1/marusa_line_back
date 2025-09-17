@@ -1,7 +1,7 @@
-﻿using marusa_line.Controllers.Models;
-using marusa_line.Controllers.NewFolder;
+﻿using marusa_line.Models;
+using marusa_line.Dtos;
 
-namespace marusa_line.Controllers.interfaces
+namespace marusa_line.interfaces
 {
     public interface PostInterface
     {
@@ -13,5 +13,7 @@ namespace marusa_line.Controllers.interfaces
         Task<int> InsertPostAsync(InsertPostDto dto);
         Task<int> EditPostAsync(InsertPostDto dto);
         Task<DateTime> deletePhoto(int photoId);
+        Task<List<ProductTypes>> GetProductTypes();
+
     }
 }

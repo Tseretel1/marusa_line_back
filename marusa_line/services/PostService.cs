@@ -1,15 +1,15 @@
-﻿using marusa_line.Controllers.interfaces;
-using marusa_line.Controllers.Models;
+﻿using marusa_line.interfaces;
+using marusa_line.Models;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Dapper;
 using Microsoft.IdentityModel.Tokens;
-using marusa_line.Controllers.NewFolder;
+using marusa_line.Dtos;
 
 namespace marusa_line.services
 {
-    public class PostService :PostInterface
+    public class PostService : PostInterface
     {
         private readonly string _connectionString;
 
@@ -200,6 +200,18 @@ namespace marusa_line.services
                 commandType: CommandType.StoredProcedure
             );
             return photoDeleted;
+        }
+        public async Task<List<ProductTypes>> GetProductTypes()
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<ProductTypes>(
+                "[dbo].[GetProductTypes]",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return result.ToList();
         }
     }
 

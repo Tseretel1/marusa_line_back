@@ -1,6 +1,6 @@
-﻿using marusa_line.Controllers.Models;
+﻿using marusa_line.Models;
 
-namespace marusa_line.Controllers.NewFolder
+namespace marusa_line.Dtos
 {
     public class InsertPostDto
     {

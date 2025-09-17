@@ -1,5 +1,5 @@
-using marusa_line.Controllers.interfaces;
-using marusa_line.Controllers.services;
+using marusa_line.interfaces;
+using marusa_line.services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿namespace marusa_line.Controllers.Models
+﻿namespace marusa_line.Models
 {
     public class Likes
     {
