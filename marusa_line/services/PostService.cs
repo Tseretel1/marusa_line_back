@@ -7,7 +7,7 @@ using Dapper;
 using Microsoft.IdentityModel.Tokens;
 using marusa_line.Controllers.NewFolder;
 
-namespace marusa_line.Controllers.services
+namespace marusa_line.services
 {
     public class PostService :PostInterface
     {

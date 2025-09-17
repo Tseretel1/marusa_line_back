@@ -1,6 +1,6 @@
-﻿using marusa_line.Controllers.Models;
+﻿using marusa_line.Models;
 
-namespace marusa_line.Controllers.interfaces
+namespace marusa_line.interfaces
 {
     public interface PostInterface
     {
