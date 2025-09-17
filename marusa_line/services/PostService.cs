@@ -18,7 +18,7 @@ namespace marusa_line.services
             _connectionString = config.GetConnectionString("marusa_line_connection");
         }
 
-        public async Task<List<Post>> GetPostsAsync()
+        public async Task<List<Post>> GetPostsAsync(int productTypeId)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -36,13 +36,14 @@ namespace marusa_line.services
                         lookup.Add(existingPost.Id, existingPost);
                     }
 
-                    if (photo != null && photo.PhotoId!=null)
+                    if (photo != null && photo.PhotoId != null)
                     {
                         existingPost.Photos.Add(photo);
                     }
 
                     return existingPost;
                 },
+                param: new { ProductId = productTypeId }, 
                 splitOn: "PhotoId",
                 commandType: CommandType.StoredProcedure
             );

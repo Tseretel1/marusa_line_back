@@ -5,7 +5,7 @@ namespace marusa_line.interfaces
 {
     public interface PostInterface
     {
-        Task<List<Post>> GetPostsAsync();
+        Task<List<Post>> GetPostsAsync(int productTypeId);
         Task<List<Photos>> GetAllPhotos();
         Task<bool> likePost(int postId,string emoji);
         Task<List<Post>> GetMostDiscountedPosts();
