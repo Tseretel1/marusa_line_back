@@ -26,7 +26,7 @@ namespace marusa_line.services
             var lookup = new Dictionary<int, Post>();
 
             var result = await conn.QueryAsync<Post, Photos, Post>(
-                "[dbo].[GetPostsWithPhotos]",
+                "[dbo].[GetProducts]",
                 (post, photo) =>
                 {
                     if (!lookup.TryGetValue(post.Id, out var existingPost))
@@ -60,7 +60,7 @@ namespace marusa_line.services
             var lookup = new Dictionary<int, Post>();
 
             var result = await conn.QueryAsync<Post, Photos, Post>(
-                "[dbo].[GetTopDiscountedPostsWithPhotos]",
+                "[dbo].[GetTopDiscountedProducts]",
                 (post, photo) =>
                 {
                     if (!lookup.TryGetValue(post.Id, out var existingPost))
@@ -91,7 +91,7 @@ namespace marusa_line.services
             var lookup = new Dictionary<int, Post>();
 
             var result = await conn.QueryAsync<Post, Photos, Post>(
-                "[dbo].[GetPostsWithPhotosWithId]",   
+                "[dbo].[GetProductsById]",   
                 (post, photo) =>
                 {
                     if (!lookup.TryGetValue(post.Id, out var existingPost))
@@ -138,7 +138,7 @@ namespace marusa_line.services
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
             var postId = await conn.ExecuteScalarAsync<int>(
-                "[dbo].[InsertPostWithPhotos]",
+                "[dbo].[InsertProduct]",
                 new
                 {
                     dto.Title,
@@ -146,7 +146,7 @@ namespace marusa_line.services
                     dto.Price,
                     dto.DiscountedPrice,
                     dto.Quantity,
-                    dto.ProductType
+                    dto.ProductTypeId
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -154,7 +154,7 @@ namespace marusa_line.services
             {
                 await conn.ExecuteAsync(
                     "[dbo].[InsertPhoto]",
-                    new { PostId = postId, photo.PhotoUrl },
+                    new { ProductId = postId, photo.PhotoUrl },
                     commandType: CommandType.StoredProcedure
                 );
             }
@@ -165,7 +165,7 @@ namespace marusa_line.services
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
             var postId = await conn.ExecuteScalarAsync<int>(
-                "[dbo].[EditPostWithPhotos]",
+                "[dbo].[EditProduct]",
                 new
                 {
                     dto.Id,
@@ -174,7 +174,7 @@ namespace marusa_line.services
                     dto.Price,
                     dto.DiscountedPrice,
                     dto.Quantity,
-                    dto.ProductType
+                    dto.ProductTypeId
                 },
                 commandType: CommandType.StoredProcedure
             );
