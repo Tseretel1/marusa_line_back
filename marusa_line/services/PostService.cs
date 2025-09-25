@@ -182,7 +182,7 @@ namespace marusa_line.services
             {
                 await conn.ExecuteAsync(
                     "[dbo].[InsertPhoto]",
-                    new { PostId = postId, photo.PhotoUrl },
+                    new { ProductId = postId, photo.PhotoUrl },
                     commandType: CommandType.StoredProcedure
                 );
             }
