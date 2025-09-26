@@ -1,13 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Text.Json;
-using Google.Apis.Auth;
+using marusa_line.Models;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using marusa_line.Dtos;
-using marusa_line.services;
+
 using marusa_line.interfaces;
 namespace marusa_line.Controllers
 {
@@ -32,23 +26,34 @@ namespace marusa_line.Controllers
 
 
         [HttpGet("google/callback")]
-        public async Task<IActionResult> GoogleCallback(string code, string state)
+        public async Task<IActionResult> GoogleCallback([FromQuery] string code, [FromQuery] string state)
         {
             var expectedState = HttpContext.Session.GetString("oauth_state");
-
             var authResult = await _userService.GoogleCallbackAsync(code, state, expectedState);
 
+            var user = new User {
+                Name = authResult.User.Name,
+                Email = authResult.User.Email,
+                ProfilePhoto = authResult.User.Picture,
+            };
+            var userInsertion = await _userService.InsertUserIfNotExistsAsync(user);
+
             var html = $@"
-                <script>
-                    window.opener.postMessage({{
-                        token: '{authResult.Token}',
-                        user: {System.Text.Json.JsonSerializer.Serialize(authResult.User)}
-                    }}, 'http://localhost:4200');
-                    window.close();
-                </script>
-            ";
+                 <html>
+                     <body>
+                         <script>
+                             window.opener.postMessage({{
+                                 token: '{authResult.Token}',
+                                 user: {System.Text.Json.JsonSerializer.Serialize(authResult.User)}
+                             }}, 'http://localhost:4200');
+                             window.close();
+                         </script>
+                     </body>
+                 </html>
+             ";
 
             return Content(html, "text/html");
         }
+
     }
 }

@@ -2,11 +2,17 @@
 using marusa_line.Dtos;
 using marusa_line.interfaces;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Dapper;
+using marusa_line.Models;
+
+
 namespace marusa_line.services
 {
     public class UserService : UserInterface
@@ -14,6 +20,7 @@ namespace marusa_line.services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _config;
         private readonly GoogleSettings _googleSettings;
+        private readonly string _connectionString;
 
         public UserService(IHttpClientFactory httpClientFactory, IConfiguration config)
         {
@@ -21,6 +28,8 @@ namespace marusa_line.services
             _config = config;
             _googleSettings = _config.GetSection("web").Get<GoogleSettings>()
                           ?? throw new InvalidOperationException("Missing 'web' config section");
+            _connectionString = config.GetConnectionString("marusa_line_connection");
+
         }
         public string GetGoogleAuthUrl()
         {
@@ -109,6 +118,38 @@ namespace marusa_line.services
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+        public async Task<bool> InsertUserIfNotExistsAsync(User user)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var exists = await conn.QuerySingleAsync<bool>(
+                "[dbo].[UserExistsCheck]",
+                param: new { Email = user.Email },
+                commandType: CommandType.StoredProcedure
+            );
+
+            if (exists)
+            {
+                return false; 
+            }
+            var newUserId = await conn.QuerySingleAsync<int>(
+                "[dbo].[InsertUser]",
+                param: new
+                {
+                    Name = user.Name,
+                    Email = user.Email,
+                    ProfilePhoto = user.ProfilePhoto
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            user.Id = newUserId;
+
+            return true;
         }
     }
 }
