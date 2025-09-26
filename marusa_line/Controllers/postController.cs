@@ -2,6 +2,7 @@
 using marusa_line.Dtos;
 using marusa_line.services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace marusa_line.Controllers
 {
@@ -10,7 +11,6 @@ namespace marusa_line.Controllers
     public class postController : Controller
     {
         private readonly PostInterface _postService;
-
         public postController(PostInterface postService)
         {
             _postService = postService;
@@ -37,11 +37,13 @@ namespace marusa_line.Controllers
             }
         }
 
+
         [HttpGet("get-most-discounted-posts")]
         public async Task<IActionResult> GetMostDiscountedPosts()
         {
             try
             {
+                
                 var posts = await _postService.GetMostDiscountedPosts();
 
                 if (posts == null || !posts.Any())
