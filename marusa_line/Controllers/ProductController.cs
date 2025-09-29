@@ -8,21 +8,41 @@ namespace marusa_line.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class postController : Controller
+    public class ProductController : Controller
     {
-        private readonly PostInterface _postService;
-        public postController(PostInterface postService)
+        private readonly ProductInterface _postService;
+        public ProductController(ProductInterface postService)
         {
             _postService = postService;
         }
 
         [HttpGet("get-posts")]
-        public async Task<IActionResult> GetPosts(int productId)
+        public async Task<IActionResult> GetPosts(int productId,int? userid)
         {
 
             try
             {
-                var posts = await _postService.GetPostsAsync(productId); 
+                var posts = await _postService.GetPostsAsync(productId,userid); 
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-user-liked-posts")]
+        public async Task<IActionResult> GetPosts(int userid)
+        {
+
+            try
+            {
+                var posts = await _postService.GetUserLikedPosts(userid);
 
                 if (posts == null || !posts.Any())
                 {
@@ -37,14 +57,13 @@ namespace marusa_line.Controllers
             }
         }
 
-
         [HttpGet("get-most-discounted-posts")]
-        public async Task<IActionResult> GetMostDiscountedPosts()
+        public async Task<IActionResult> GetMostDiscountedPosts(int? userid)
         {
             try
             {
                 
-                var posts = await _postService.GetMostDiscountedPosts();
+                var posts = await _postService.GetMostDiscountedPosts(userid);
 
                 if (posts == null || !posts.Any())
                 {
@@ -60,11 +79,11 @@ namespace marusa_line.Controllers
         }
 
         [HttpGet("get-post-with-id")]
-        public async Task<IActionResult> GetPostWitId(int id)
+        public async Task<IActionResult> GetPostWitId(int id, int? userid)
         {
             try
             {
-                var posts = await _postService.GetPostWithId(id);
+                var posts = await _postService.GetPostWithId(id,userid);
 
                 if (posts == null || !posts.Any())
                 {
@@ -119,15 +138,14 @@ namespace marusa_line.Controllers
         }
 
         [HttpGet("like-post")]
-        public async Task<IActionResult> LikePost()
+        public async Task<IActionResult> LikePost(int userid, int productid)
         {
             try
             {
-                var posts = await _postService.GetAllPhotos();
-
-                if (posts == null || !posts.Any())
+                var posts = await _postService.likeProduct(userid,productid);
+                if (posts == false)
                 {
-                    return NotFound();
+                    return Ok(posts);
                 }
 
                 return Ok(posts);

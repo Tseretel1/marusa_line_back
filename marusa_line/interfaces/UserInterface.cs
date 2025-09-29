@@ -7,6 +7,6 @@ namespace marusa_line.interfaces
     {
         Task<AuthResultDto?> GoogleCallbackAsync(string code, string state,string expectedState);
         string GetGoogleAuthUrl();
-        Task<bool> InsertUserIfNotExistsAsync(User user);
+        Task<int> InsertUserIfNotExistsAsync(UserDto user);
     }
 }

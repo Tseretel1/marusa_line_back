@@ -31,13 +31,6 @@ namespace marusa_line.Controllers
             var expectedState = HttpContext.Session.GetString("oauth_state");
             var authResult = await _userService.GoogleCallbackAsync(code, state, expectedState);
 
-            var user = new User {
-                Name = authResult.User.Name,
-                Email = authResult.User.Email,
-                ProfilePhoto = authResult.User.Picture,
-            };
-            var userInsertion = await _userService.InsertUserIfNotExistsAsync(user);
-
             var html = $@"
                  <html>
                      <body>
@@ -54,6 +47,5 @@ namespace marusa_line.Controllers
 
             return Content(html, "text/html");
         }
-
     }
 }

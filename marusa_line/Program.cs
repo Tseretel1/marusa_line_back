@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 /*Service and interfaces injection*/
-builder.Services.AddScoped<PostInterface, PostService>();
+builder.Services.AddScoped<ProductInterface, ProductService>();
 builder.Services.AddScoped<UserInterface, UserService>();
 
 builder.Services.AddHttpClient();

@@ -80,15 +80,22 @@ namespace marusa_line.services
 
             var idToken = doc.RootElement.GetProperty("id_token").GetString();
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
-
-            var user = new UserDto
+            var userInssertion = new UserDto
             {
-                Id = payload.Subject,
                 Email = payload.Email,
                 Name = payload.Name,
                 Picture = payload.Picture
             };
+            var userInsertion = await InsertUserIfNotExistsAsync(userInssertion);
 
+
+            var user = new UserDto
+            {
+                Id = userInsertion,
+                Email = payload.Email,
+                Name = payload.Name,
+                Picture = payload.Picture
+            };
             var jwt = CreateJwtForUser(user);
 
             return new AuthResultDto
@@ -98,6 +105,36 @@ namespace marusa_line.services
             };
         }
 
+        public async Task<int> InsertUserIfNotExistsAsync(UserDto user)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var exists = await conn.QuerySingleAsync<int>(
+                "[dbo].[UserExistsCheck]",
+                param: new { Email = user.Email },
+                commandType: CommandType.StoredProcedure
+            );
+
+            if (exists!=0)
+            {
+                return exists; 
+            }
+            var newUserId = await conn.QuerySingleAsync<int>(
+                "[dbo].[InsertUser]",
+                param: new
+                {
+                    Name = user.Name,
+                    Email = user.Email,
+                    ProfilePhoto = user.Picture
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            user.Id = newUserId;
+            return newUserId;
+        }
+
         private string CreateJwtForUser(UserDto user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!));
@@ -105,7 +142,7 @@ namespace marusa_line.services
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim("UserId", user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("name", user.Name ?? "")
             };
@@ -118,38 +155,6 @@ namespace marusa_line.services
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-
-        public async Task<bool> InsertUserIfNotExistsAsync(User user)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            var exists = await conn.QuerySingleAsync<bool>(
-                "[dbo].[UserExistsCheck]",
-                param: new { Email = user.Email },
-                commandType: CommandType.StoredProcedure
-            );
-
-            if (exists)
-            {
-                return false; 
-            }
-            var newUserId = await conn.QuerySingleAsync<int>(
-                "[dbo].[InsertUser]",
-                param: new
-                {
-                    Name = user.Name,
-                    Email = user.Email,
-                    ProfilePhoto = user.ProfilePhoto
-                },
-                commandType: CommandType.StoredProcedure
-            );
-
-            user.Id = newUserId;
-
-            return true;
         }
     }
 }

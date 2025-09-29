@@ -9,16 +9,15 @@ using marusa_line.Dtos;
 
 namespace marusa_line.services
 {
-    public class PostService : PostInterface
+    public class ProductService : ProductInterface
     {
         private readonly string _connectionString;
 
-        public PostService(IConfiguration config)
+        public ProductService(IConfiguration config)
         {
             _connectionString = config.GetConnectionString("marusa_line_connection");
         }
-
-        public async Task<List<Post>> GetPostsAsync(int productTypeId)
+        public async Task<List<Post>> GetPostsAsync(int productTypeId, int? userId)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -43,7 +42,46 @@ namespace marusa_line.services
 
                     return existingPost;
                 },
-                param: new { ProductId = productTypeId }, 
+                param: new
+                {
+                    ProductId = productTypeId,
+                    UserId = userId
+                },
+                splitOn: "PhotoId",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return lookup.Values.ToList();
+        }
+        public async Task<List<Post>> GetUserLikedPosts(int userId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var lookup = new Dictionary<int, Post>();
+
+            var result = await conn.QueryAsync<Post, Photos, Post>(
+                "[dbo].[GetLikedPostsByUser]",
+                (post, photo) =>
+                {
+                    if (!lookup.TryGetValue(post.Id, out var existingPost))
+                    {
+                        existingPost = post;
+                        existingPost.Photos = new List<Photos>();
+                        lookup.Add(existingPost.Id, existingPost);
+                    }
+
+                    if (photo != null && photo.PhotoId != null)
+                    {
+                        existingPost.Photos.Add(photo);
+                    }
+
+                    return existingPost;
+                },
+                param: new
+                {
+                    UserId = userId
+                },
                 splitOn: "PhotoId",
                 commandType: CommandType.StoredProcedure
             );
@@ -52,7 +90,8 @@ namespace marusa_line.services
         }
 
 
-        public async Task<List<Post>> GetMostDiscountedPosts()
+
+        public async Task<List<Post>> GetMostDiscountedPosts(int? userId = null)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -77,13 +116,19 @@ namespace marusa_line.services
 
                     return existingPost;
                 },
+                param: new
+                {
+                    UserId = userId  
+                },
                 splitOn: "PhotoId",
                 commandType: CommandType.StoredProcedure
             );
 
             return lookup.Values.ToList();
         }
-        public async Task<List<Post>> GetPostWithId(int id)
+
+
+        public async Task<List<Post>> GetPostWithId(int id, int? userId = null)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -91,7 +136,7 @@ namespace marusa_line.services
             var lookup = new Dictionary<int, Post>();
 
             var result = await conn.QueryAsync<Post, Photos, Post>(
-                "[dbo].[GetProductsById]",   
+                "[dbo].[GetProductsById]",
                 (post, photo) =>
                 {
                     if (!lookup.TryGetValue(post.Id, out var existingPost))
@@ -108,13 +153,18 @@ namespace marusa_line.services
 
                     return existingPost;
                 },
-                param: new { Id = id },   
+                param: new
+                {
+                    Id = id,
+                    UserId = userId 
+                },
                 splitOn: "PhotoId",
                 commandType: CommandType.StoredProcedure
             );
 
             return lookup.Values.ToList();
         }
+
 
         public async Task<List<Photos>> GetAllPhotos()
         {
@@ -129,10 +179,20 @@ namespace marusa_line.services
             return result.ToList();
         }
 
-        public async Task<bool> likePost(int postId, string emoji)
+        public async Task<bool> likeProduct(int userId, int productId)
         {
-            throw new NotImplementedException();
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var isLiked = await conn.QuerySingleAsync<bool>(
+                "[dbo].[LikePost]",
+                param: new { UserId = userId, ProductId = productId },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return isLiked;
         }
+
         public async Task<int> InsertPostAsync(InsertPostDto dto)
         {
             using var conn = new SqlConnection(_connectionString);
