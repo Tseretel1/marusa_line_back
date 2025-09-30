@@ -136,6 +136,25 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("get-order-statuses")]
+        public async Task<IActionResult> GetOrderStatuses()
+        {
+            try
+            {
+                var posts = await _postService.GetOrderStatuses();
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet("like-post")]
         public async Task<IActionResult> LikePost(int userid, int productid)
@@ -195,6 +214,39 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
+        [HttpPost("insert-order")]
+        public async Task<IActionResult> insertOrder(int userId, int productId)
+        {
+            try
+            {
+                var posts = await _postService.InsertOrderAsync(userId,productId);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-user-orders")]
+        public async Task<IActionResult> GetUserOrders(int userid)
+        {
+
+            try
+            {
+                var posts = await _postService.GetUserOrders(userid);
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

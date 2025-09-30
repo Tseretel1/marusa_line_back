@@ -53,6 +53,43 @@ namespace marusa_line.services
 
             return lookup.Values.ToList();
         }
+        public async Task<List<GetOrdersDto>> GetUserOrders(int userId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var lookup = new Dictionary<int, GetOrdersDto>(); 
+
+            var result = await conn.QueryAsync<GetOrdersDto, Photos, GetOrdersDto>(
+                "[dbo].[GetMyOrders]",
+                (order, photo) =>
+                {
+                    if (!lookup.TryGetValue(order.OrderId, out var existingOrder))
+                    {
+                        existingOrder = order;
+                        existingOrder.Photos = new List<Photos>();
+                        lookup.Add(existingOrder.OrderId, existingOrder); 
+                    }
+
+                    if (photo != null && photo.PhotoId != null)
+                    {
+                        existingOrder.Photos.Add(photo);
+                    }
+
+                    return existingOrder;
+                },
+                param: new
+                {
+                    UserId = userId
+                },
+                splitOn: "PhotoId",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return lookup.Values.ToList();
+        }
+
+
         public async Task<List<Post>> GetUserLikedPosts(int userId)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -88,8 +125,6 @@ namespace marusa_line.services
 
             return lookup.Values.ToList();
         }
-
-
 
         public async Task<List<Post>> GetMostDiscountedPosts(int? userId = null)
         {
@@ -274,6 +309,37 @@ namespace marusa_line.services
 
             return result.ToList();
         }
+        public async Task<List<OrderStatuses>> GetOrderStatuses()
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<OrderStatuses>(
+                "[dbo].[GetOrderStatuses]",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<int> InsertOrderAsync(int userId, int productId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var orderId = await conn.ExecuteScalarAsync<int>(
+                "[dbo].[InsertOrder]",
+                new
+                {
+                    UserId = userId,
+                    ProductId = productId
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return orderId;
+        }
+
     }
 
 }
