@@ -47,5 +47,37 @@ namespace marusa_line.Controllers
 
             return Content(html, "text/html");
         }
+
+        [HttpGet("facebook")]
+        public IActionResult Facebook()
+        {
+            var url = _userService.GetFacebookAuthUrl();
+            return Redirect(url);
+        }
+
+
+
+        [HttpGet("facebook/callback")]
+        public async Task<IActionResult> FacebookCallback([FromQuery] string code)
+        {
+            var expectedState = HttpContext.Session.GetString("oauth_state");
+            var authResult = await _userService.FacebookCallbackAsync(code);
+
+            var html = $@"
+                 <html>
+                     <body>
+                         <script>
+                             window.opener.postMessage({{
+                                 token: '{authResult.Token}',
+                                 user: {System.Text.Json.JsonSerializer.Serialize(authResult.User)}
+                             }}, 'http://localhost:4200');
+                             window.close();
+                         </script>
+                     </body>
+                 </html>
+             ";
+
+            return Content(html, "text/html");
+        }
     }
 }

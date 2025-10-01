@@ -8,5 +8,7 @@ namespace marusa_line.interfaces
         Task<AuthResultDto?> GoogleCallbackAsync(string code, string state,string expectedState);
         string GetGoogleAuthUrl();
         Task<int> InsertUserIfNotExistsAsync(UserDto user);
+        string GetFacebookAuthUrl();
+        Task<AuthResultDto?> FacebookCallbackAsync(string code);
     }
 }
