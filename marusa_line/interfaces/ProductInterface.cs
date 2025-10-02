@@ -18,5 +18,9 @@ namespace marusa_line.interfaces
         Task<List<ProductTypes>> GetProductTypes();
         Task<List<OrderStatuses>> GetOrderStatuses();
         Task<int> InsertOrderAsync(int userId, int productId);
+
+        Task<UserOptionalFields> GetUser(int userid);
+        Task<int> InsertLocation(int userId, string location);
+        Task<int> InsertPhoneNumber(int userId, string phoneNumber);
     }
 }

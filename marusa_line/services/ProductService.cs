@@ -336,10 +336,61 @@ namespace marusa_line.services
                 },
                 commandType: CommandType.StoredProcedure
             );
-
             return orderId;
         }
 
-    }
+        public async Task<UserOptionalFields> GetUser(int userid)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
 
+            var result = await conn.QuerySingleAsync<UserOptionalFields>(
+                "[dbo].[GetUserOptionalFields]",
+                new
+                {
+                    UserId = userid,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result;
+        }
+
+        public async Task<int> InsertPhoneNumber(int userId, string phoneNumber)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@UserId", userId);
+            parameters.Add("@PhoneNumber", phoneNumber);
+            parameters.Add("ReturnVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+            await conn.ExecuteAsync(
+                "[dbo].[UpdatePhoneNumber]",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return parameters.Get<int>("ReturnVal");
+        }
+
+        public async Task<int> InsertLocation(int userId, string location)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@UserId", userId);
+            parameters.Add("@Location", location);
+            parameters.Add("ReturnVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+            await conn.ExecuteAsync(
+                "[dbo].[UpdateLocation]",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return parameters.Get<int>("ReturnVal");
+        }
+    }
 }

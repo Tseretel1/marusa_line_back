@@ -248,5 +248,55 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+        [HttpGet("get-users-optional")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            try
+            {
+                var posts = await _postService.GetUser(id);
+
+                if (posts == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+        [HttpPost("insert-phone")]
+        public async Task<IActionResult> InsertPhoneNumber(int userId, string  phone)
+        {
+            try
+            {
+                var posts = await _postService.InsertPhoneNumber(userId, phone);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("insert-location")]
+        public async Task<IActionResult> InsertLocation(int userId, string location)
+        {
+            try
+            {
+                var posts = await _postService.InsertLocation(userId, location);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
