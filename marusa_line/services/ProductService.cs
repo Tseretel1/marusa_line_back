@@ -161,6 +161,41 @@ namespace marusa_line.services
 
             return lookup.Values.ToList();
         }
+        public async Task<List<Post>> GetMostSoldProducts(int? userId = null)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var lookup = new Dictionary<int, Post>();
+
+            var result = await conn.QueryAsync<Post, Photos, Post>(
+                "[dbo].[GetTopSoldProducts]",
+                (post, photo) =>
+                {
+                    if (!lookup.TryGetValue(post.Id, out var existingPost))
+                    {
+                        existingPost = post;
+                        existingPost.Photos = new List<Photos>();
+                        lookup.Add(existingPost.Id, existingPost);
+                    }
+
+                    if (photo != null && photo.PhotoId != null)
+                    {
+                        existingPost.Photos.Add(photo);
+                    }
+
+                    return existingPost;
+                },
+                param: new
+                {
+                    UserId = userId
+                },
+                splitOn: "PhotoId",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return lookup.Values.ToList();
+        }
 
 
         public async Task<List<Post>> GetPostWithId(int id, int? userId = null)

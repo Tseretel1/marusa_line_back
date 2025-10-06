@@ -78,6 +78,27 @@ namespace marusa_line.Controllers
             }
         }
 
+        [HttpGet("get-most-sold-posts")]
+        public async Task<IActionResult> GetMostSold(int? userid)
+        {
+            try
+            {
+
+                var posts = await _postService.GetMostSoldProducts(userid);
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("get-post-with-id")]
         public async Task<IActionResult> GetPostWitId(int id, int? userid)
         {
@@ -249,7 +270,6 @@ namespace marusa_line.Controllers
             }
         }
 
-
         [HttpGet("get-users-optional")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -270,8 +290,6 @@ namespace marusa_line.Controllers
             }
         }
 
-
-
         [HttpPost("insert-phone")]
         public async Task<IActionResult> InsertPhoneNumber(int userId, string  phone)
         {
@@ -285,6 +303,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost("insert-location")]
         public async Task<IActionResult> InsertLocation(int userId, string location)
         {
