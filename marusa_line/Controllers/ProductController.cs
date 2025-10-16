@@ -106,7 +106,7 @@ namespace marusa_line.Controllers
             {
                 var posts = await _postService.GetPostWithId(id,userid);
 
-                if (posts == null || !posts.Any())
+                if (posts == null)
                 {
                     return NotFound();
                 }
@@ -237,11 +237,11 @@ namespace marusa_line.Controllers
         }
 
         [HttpPost("insert-order")]
-        public async Task<IActionResult> insertOrder(int userId, int productId)
+        public async Task<IActionResult> insertOrder(InsertOrder order)
         {
             try
             {
-                var posts = await _postService.InsertOrderAsync(userId,productId);
+                var posts = await _postService.InsertOrderAsync(order);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -263,6 +263,36 @@ namespace marusa_line.Controllers
                 }
 
                 return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-order-details")]
+        public async Task<IActionResult> GetOrderDetails(int orderId)
+        {
+
+            try
+            {
+                var orders= await _postService.GetOrderById(orderId);
+
+                if (orders== null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var prodcut = await _postService.GetPostWithId(orders.ProductId,0);
+                    var returnOrder = new
+                    {
+                        orders,
+                        product = prodcut,
+                    };
+
+
+                   return Ok(returnOrder);
+                }
             }
             catch (Exception ex)
             {

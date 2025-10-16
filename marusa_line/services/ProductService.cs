@@ -89,6 +89,21 @@ namespace marusa_line.services
             return lookup.Values.ToList();
         }
 
+        public async Task<OrderDetailsDto?> GetOrderById(int orderId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            var order = await conn.QueryFirstOrDefaultAsync<OrderDetailsDto>(
+                "[dbo].[GetOrderById]",
+                new { OrderId = orderId },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return order;
+        }
+
+
+
 
         public async Task<List<Post>> GetUserLikedPosts(int userId)
         {
@@ -197,8 +212,7 @@ namespace marusa_line.services
             return lookup.Values.ToList();
         }
 
-
-        public async Task<List<Post>> GetPostWithId(int id, int? userId = null)
+        public async Task<Post?> GetPostWithId(int id, int? userId = null)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -216,7 +230,7 @@ namespace marusa_line.services
                         lookup.Add(existingPost.Id, existingPost);
                     }
 
-                    if (photo != null && photo.PhotoId != null)
+                    if (photo != null && photo.PhotoId > 0)
                     {
                         existingPost.Photos.Add(photo);
                     }
@@ -226,14 +240,14 @@ namespace marusa_line.services
                 param: new
                 {
                     Id = id,
-                    UserId = userId 
+                    UserId = userId
                 },
                 splitOn: "PhotoId",
                 commandType: CommandType.StoredProcedure
             );
-
-            return lookup.Values.ToList();
+            return lookup.Values.FirstOrDefault();
         }
+
 
 
         public async Task<List<Photos>> GetAllPhotos()
@@ -357,7 +371,7 @@ namespace marusa_line.services
             return result.ToList();
         }
 
-        public async Task<int> InsertOrderAsync(int userId, int productId)
+        public async Task<int> InsertOrderAsync(InsertOrder order)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -366,8 +380,12 @@ namespace marusa_line.services
                 "[dbo].[InsertOrder]",
                 new
                 {
-                    UserId = userId,
-                    ProductId = productId
+                    UserId = order.UserId,
+                    ProductId = order.ProductId,
+                    ProductQuantity = order.ProductQuantity,
+                    DeliveryType = order.DeliveryType,
+                    Comment = order.Comment,
+                    FinalPrice = order.FinalPrice
                 },
                 commandType: CommandType.StoredProcedure
             );

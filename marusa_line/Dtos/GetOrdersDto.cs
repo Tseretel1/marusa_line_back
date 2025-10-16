@@ -21,4 +21,20 @@ namespace marusa_line.Dtos
 
         public List<Photos> Photos { get; set; } = new List<Photos>(); 
     }
+
+
+    public class OrderDetailsDto
+    {
+        public int OrderId { get; set; }
+        public int UserId { get; set; }
+        public int ProductId { get; set; }
+        public bool IsPaid { get; set; }
+        public int StatusId { get; set; }
+        public DateTime CreateDate { get; set; }
+        public string? DeliveryType { get; set; }
+        public int ProductQuantity { get; set; }
+        public string? Comment { get; set; }
+        public decimal FinalPrice { get; set; }
+
+    }
 }
