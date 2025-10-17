@@ -6,6 +6,7 @@ namespace marusa_line.interfaces
     public interface ProductInterface
     {
         Task<List<Post>> GetPostsAsync(int productTypeId, int? userid);
+        Task<List<Post>> GetPostsForAdminPanel(int productTypeId, int? userId);
         Task<List<Post>> GetUserLikedPosts(int userid);
         Task<List<GetOrdersDto>> GetUserOrders(int userId);
         Task<OrderDetailsDto> GetOrderById(int userId);
@@ -17,6 +18,9 @@ namespace marusa_line.interfaces
         Task<Post> GetPostWithId(int id, int? userid);
         Task<int> InsertPostAsync(InsertPostDto dto);
         Task<int> EditPostAsync(InsertPostDto dto);
+        Task<int> RemoveProductById(int postId);
+        Task<int> RevertProductById(int postId);
+
         Task<DateTime> deletePhoto(int photoId);
         Task<List<ProductTypes>> GetProductTypes();
         Task<List<OrderStatuses>> GetOrderStatuses();
@@ -24,6 +28,7 @@ namespace marusa_line.interfaces
 
         Task<UserOptionalFields> GetUser(int userid);
         Task<int> InsertLocation(int userId, string location);
+        Task<int> GetLikeCount();
         Task<int> InsertPhoneNumber(int userId, string phoneNumber);
     }
 }

@@ -36,6 +36,27 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("get-posts-for-adminpanel")]
+        public async Task<IActionResult> GetPostsForAdminPanel(int productId, int? userid)
+        {
+
+            try
+            {
+                var posts = await _postService.GetPostsForAdminPanel(productId, userid);
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet("get-user-liked-posts")]
         public async Task<IActionResult> GetPosts(int userid)
         {
@@ -222,6 +243,32 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("remove-post")]
+        public async Task<IActionResult> RemovePost(int postid)
+        {
+            try
+            {
+                var posts = await _postService.RemoveProductById(postid);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("revert-post")]
+        public async Task<IActionResult> RevertPost(int postid)
+        {
+            try
+            {
+                var posts = await _postService.RevertProductById(postid);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost("delete-photo")]
         public async Task<IActionResult> deletePhoto(int photoId)
         {
@@ -340,6 +387,20 @@ namespace marusa_line.Controllers
             try
             {
                 var posts = await _postService.InsertLocation(userId, location);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get-like-count")]
+        public async Task<IActionResult> GetLikeCount()
+        {
+            try
+            {
+                var posts = await _postService.GetLikeCount();
                 return Ok(posts);
             }
             catch (Exception ex)
