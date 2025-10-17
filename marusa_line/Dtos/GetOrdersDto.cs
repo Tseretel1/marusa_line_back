@@ -7,7 +7,13 @@ namespace marusa_line.Dtos
         public int OrderId { get; set; }          
         public DateTime CreateDate { get; set; }   
         public int StatusId { get; set; }          
-        public bool IsPaid { get; set; }          
+        public bool IsPaid { get; set; }
+        public string? DeliveryType { get; set; }
+        public int ProductQuantity { get; set; }
+        public string? Comment { get; set; }
+        public decimal FinalPrice { get; set; }
+
+
 
         public int ProductId { get; set; }         
         public string Title { get; set; }
