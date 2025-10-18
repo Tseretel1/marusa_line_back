@@ -128,6 +128,45 @@ namespace marusa_line.services
 
             return lookup.Values.ToList();
         }
+        public async Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var lookup = new Dictionary<int, OrderControlPanel>();
+
+            var result = await conn.QueryAsync<OrderControlPanel, Photos, User, OrderControlPanel>(
+                "[dbo].[GetAllOrdersControlPanel]",
+                (orderControl, photo, user) =>
+                {
+                    if (!lookup.TryGetValue(orderControl.OrderId, out var existingOrder))
+                    {
+                        existingOrder = orderControl;
+                        existingOrder.Photos = new List<Photos>();
+                        existingOrder.User = user;
+                        lookup.Add(existingOrder.OrderId, existingOrder);
+                    }
+
+                    if (photo != null && photo.PhotoId != 0)
+                    {
+                        existingOrder.Photos.Add(photo);
+                    }
+
+                    return existingOrder;
+                },
+                param: new
+                {
+                    IsPaid = order.IsPaid,
+                    OrderId = order.OrderId,
+                    PageNumber = order.PageNumber,
+                    PageSize = order.PageSize,
+                },
+                splitOn: "PhotoId,UserId",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return lookup.Values.ToList();
+        }
 
         public async Task<OrderDetailsDto?> GetOrderById(int orderId)
         {

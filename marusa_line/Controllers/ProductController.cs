@@ -37,26 +37,8 @@ namespace marusa_line.Controllers
             }
         }
 
-        [HttpGet("get-posts-for-adminpanel")]
-        public async Task<IActionResult> GetPostsForAdminPanel(int productId, int? userid)
-        {
 
-            try
-            {
-                var posts = await _postService.GetPostsForAdminPanel(productId, userid);
 
-                if (posts == null || !posts.Any())
-                {
-                    return NotFound();
-                }
-
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
         [HttpGet("get-user-liked-posts")]
         public async Task<IActionResult> GetPosts(int userid)
         {
@@ -139,6 +121,8 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
         [HttpGet("get-all-photos")]
         public async Task<IActionResult> GetAllPhotos()
         {
@@ -178,6 +162,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("get-order-statuses")]
         public async Task<IActionResult> GetOrderStatuses()
         {
@@ -209,72 +194,6 @@ namespace marusa_line.Controllers
                     return Ok(posts);
                 }
 
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("add-post")]
-        public async Task<IActionResult> InsertPostAsync([FromBody] InsertPostDto dto)
-        {
-            try
-            {
-                var posts = await _postService.InsertPostAsync(dto);
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPost("edit-post")]
-        public async Task<IActionResult> EditPostAsync([FromBody] InsertPostDto dto)
-        {
-            try
-            {
-                var posts = await _postService.EditPostAsync(dto);
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPost("remove-post")]
-        public async Task<IActionResult> RemovePost(int postid)
-        {
-            try
-            {
-                var posts = await _postService.RemoveProductById(postid);
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPost("revert-post")]
-        public async Task<IActionResult> RevertPost(int postid)
-        {
-            try
-            {
-                var posts = await _postService.RevertProductById(postid);
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPost("delete-photo")]
-        public async Task<IActionResult> deletePhoto(int photoId)
-        {
-            try
-            {
-                var posts = await _postService.deletePhoto(photoId);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -316,6 +235,10 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+
+
         [HttpGet("get-order-details")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
@@ -395,18 +318,7 @@ namespace marusa_line.Controllers
             }
         }
 
-        [HttpGet("get-like-count")]
-        public async Task<IActionResult> GetLikeCount()
-        {
-            try
-            {
-                var posts = await _postService.GetLikeCount();
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+  
+
     }
 }
