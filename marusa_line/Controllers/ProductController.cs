@@ -26,7 +26,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -49,7 +49,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -70,7 +70,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -91,7 +91,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -111,7 +111,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null)
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -132,7 +132,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -152,7 +152,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -172,7 +172,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -225,7 +225,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
@@ -249,7 +249,7 @@ namespace marusa_line.Controllers
 
                 if (orders== null)
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
                 else
                 {
@@ -279,7 +279,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null)
                 {
-                    return NotFound();
+                    return Ok(null);
                 }
 
                 return Ok(posts);
