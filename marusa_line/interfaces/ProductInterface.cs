@@ -17,6 +17,7 @@ namespace marusa_line.interfaces
         Task<List<Post>> GetMostDiscountedPosts(int? userid);
         Task<List<Post>> GetMostSoldProducts(int? userid);
         Task<Post> GetPostWithId(int id, int? userid);
+        Task<Post?> GetOrderProduct(int id, int? userId = null);
         Task<Post> GetPostWithIdControlPanel(int id, int? userid);
         Task<int> InsertPostAsync(InsertPostDto dto);
         Task<int> EditPostAsync(InsertPostDto dto);

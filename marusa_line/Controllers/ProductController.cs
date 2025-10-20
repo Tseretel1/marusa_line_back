@@ -253,7 +253,7 @@ namespace marusa_line.Controllers
                 }
                 else
                 {
-                    var prodcut = await _postService.GetPostWithId(orders.ProductId,0);
+                    var prodcut = await _postService.GetOrderProduct(orders.ProductId,0);
                     var returnOrder = new
                     {
                         orders,
