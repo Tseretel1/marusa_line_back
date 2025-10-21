@@ -175,5 +175,36 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("get-order-details")]
+        public async Task<IActionResult> GetOrderDetails(int orderId)
+        {
+
+            try
+            {
+                var orders = await _postService.GetOrderById(orderId);
+
+                if (orders == null)
+                {
+                    return Ok(null);
+                }
+                else
+                {
+                    var prodcut = await _postService.GetOrderProduct(orders.ProductId, 0);
+                    var returnOrder = new
+                    {
+                        orders,
+                        product = prodcut,
+                    };
+
+
+                    return Ok(returnOrder);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

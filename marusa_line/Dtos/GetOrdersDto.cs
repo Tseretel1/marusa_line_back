@@ -41,6 +41,7 @@ namespace marusa_line.Dtos
         public int ProductQuantity { get; set; }
         public string? Comment { get; set; }
         public decimal FinalPrice { get; set; }
+        public User user { get; set; }
 
     }
 }

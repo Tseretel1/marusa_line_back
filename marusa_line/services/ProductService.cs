@@ -172,14 +172,22 @@ namespace marusa_line.services
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
-            var order = await conn.QueryFirstOrDefaultAsync<OrderDetailsDto>(
+
+            var result = await conn.QueryAsync<OrderDetailsDto, User, OrderDetailsDto>(
                 "[dbo].[GetOrderById]",
+                (order, user) =>
+                {
+                    order.user = user;
+                    return order;
+                },
                 new { OrderId = orderId },
+                splitOn: "UserId",
                 commandType: CommandType.StoredProcedure
             );
 
-            return order;
+            return result.FirstOrDefault();
         }
+
 
         public async Task<Post?> GetOrderProduct(int id, int? userId = null)
         {
