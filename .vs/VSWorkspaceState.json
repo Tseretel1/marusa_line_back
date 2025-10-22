@@ -2,8 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\marusa_line",
-    "\\marusa_line\\Controllers"
+    "\\marusa_line\\Controllers",
+    "\\marusa_line\\Dtos",
+    "\\marusa_line\\services"
   ],
-  "SelectedNode": "\\marusa_line\\Controllers\\postController.cs",
+  "SelectedNode": "\\marusa_line\\services\\ProductService.cs",
   "PreviewInSolutionExplorer": false
 }

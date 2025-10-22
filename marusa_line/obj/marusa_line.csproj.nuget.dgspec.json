@@ -54,6 +54,10 @@
               "target": "Package",
               "version": "[2.1.66, )"
             },
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.71.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.5, )"
