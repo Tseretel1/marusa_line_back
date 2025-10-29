@@ -9,9 +9,11 @@ namespace marusa_line.Controllers
     public class ControlPanelController : Controller
     {
         private readonly ProductInterface _postService;
-        public ControlPanelController(ProductInterface postService)
+        private readonly ControlPanelInterface _controlPanelService;
+        public ControlPanelController(ProductInterface postService, ControlPanelInterface controlPanelService)
         {
             _postService = postService;
+            _controlPanelService = controlPanelService;
         }
 
         [HttpGet("get-products")]
@@ -160,15 +162,19 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.GetOrdersControlPanel(dto);
+                var orders = await _postService.GetOrdersControlPanel(dto);
+                var totalCount = await _controlPanelService.GetOrdersTotalCountAsync(dto.IsPaid);
 
-                if (posts == null || !posts.Any())
+                if (orders == null || !orders.Any())
                 {
-                    return Ok(null
-                        );
+                    return Ok(null);
                 }
-
-                return Ok(posts);
+                var returnObj = new
+                {
+                    orders = orders,
+                    totalCount = totalCount,
+                };
+                return Ok(returnObj);
             }
             catch (Exception ex)
             {
@@ -200,6 +206,24 @@ namespace marusa_line.Controllers
 
                     return Ok(returnOrder);
                 }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("change-order-ispaid")]
+        public async Task<IActionResult> ChangeIsPaid(int orderId,bool ispaid)
+        {
+            try
+            {
+                var posts = await _controlPanelService.ToggleOrderIsPaidAsync(orderId,ispaid);
+                if (posts == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
             }
             catch (Exception ex)
             {

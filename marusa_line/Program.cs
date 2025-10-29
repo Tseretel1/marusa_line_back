@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 /*Service and interfaces injection*/
 builder.Services.AddScoped<ProductInterface, ProductService>();
 builder.Services.AddScoped<UserInterface, UserService>();
+builder.Services.AddScoped<ControlPanelInterface, ControlPanelService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();
