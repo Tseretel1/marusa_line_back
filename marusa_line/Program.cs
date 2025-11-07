@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ProductInterface, ProductService>();
 builder.Services.AddScoped<UserInterface, UserService>();
 builder.Services.AddScoped<ControlPanelInterface, ControlPanelService>();
+builder.Services.AddScoped<ReviewInterface, ReviewService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();
