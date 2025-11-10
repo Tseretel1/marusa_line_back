@@ -25,7 +25,24 @@ namespace marusa_line.services
             parameters.Add("@Paid", isPaid, DbType.Boolean);
 
             var rowsAffected = await conn.ExecuteAsync(
-                "[dbo].[spToggleOrderIsPaid]",
+                "[dbo].[ChangeOrderIsPaid]",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return rowsAffected;
+        }
+        public async Task<int> ChangeOrderStatus(int orderId, int isPaid)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@OrderId", orderId, DbType.Int32);
+            parameters.Add("@StatusId", isPaid, DbType.Int32);
+
+            var rowsAffected = await conn.ExecuteAsync(
+                "[dbo].[ChangeOrderStatus]",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );

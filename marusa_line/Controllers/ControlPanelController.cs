@@ -230,5 +230,23 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("change-order-status")]
+        public async Task<IActionResult> orderStatus(int orderId, int statusId)
+        {
+            try
+            {
+                var posts = await _controlPanelService.ChangeOrderStatus(orderId, statusId);
+                if (posts == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

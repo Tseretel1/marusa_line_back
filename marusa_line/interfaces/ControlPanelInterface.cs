@@ -3,6 +3,7 @@
     public interface ControlPanelInterface
     {
         Task<int> ToggleOrderIsPaidAsync(int orderId,bool isPaid);
+        Task<int> ChangeOrderStatus(int orderId, int isPaid);
         Task<int> GetOrdersTotalCountAsync(bool? isPaid);
     }
 }
