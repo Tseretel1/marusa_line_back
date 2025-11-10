@@ -2,6 +2,12 @@
 using System.Data;
 using marusa_line.interfaces;
 using Microsoft.Data.SqlClient;
+using marusa_line.Dtos.ControlPanelDtos;
+using marusa_line.Dtos;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace marusa_line.services
 {
@@ -9,9 +15,11 @@ namespace marusa_line.services
     {
        
         private readonly string _connectionString;
+        private readonly IConfiguration _config;
 
         public ControlPanelService(IConfiguration config)
         {
+            _config = config;
             _connectionString = config.GetConnectionString("marusa_line_connection");
         }
 
@@ -80,6 +88,41 @@ namespace marusa_line.services
             );
 
             return rowsAffected;
+        }
+
+        public async Task<ControlPanelLoginReturn> Login(ControlPanelLoginDto loginDto)
+        {
+            if(loginDto.Username =="giorgi"&& loginDto.Password == "giorgi")
+            {
+                var jwtToken = CreateJwtForUser(loginDto.Username);
+                var ControlPanelReturn = new ControlPanelLoginReturn
+                {
+                    Token = jwtToken,
+                };
+                return ControlPanelReturn;
+            }
+            return null;
+        }
+
+
+        private string CreateJwtForUser(string username)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new Claim("username", username),
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using marusa_line.Dtos;
+using marusa_line.Dtos.ControlPanelDtos;
 using marusa_line.interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -260,6 +261,25 @@ namespace marusa_line.Controllers
                 }
 
                 return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(ControlPanelLoginDto dto)
+        {
+
+            try
+            {
+                var token = await _controlPanelService.Login(dto);
+
+                if (token == null)
+                {
+                    return Ok(null);
+                }
+                return Ok(token);
             }
             catch (Exception ex)
             {
