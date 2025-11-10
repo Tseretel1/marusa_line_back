@@ -66,7 +66,20 @@ namespace marusa_line.services
             return totalCount;
         }
 
+        public async Task<int> DeleteOrder(int orderId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
 
+            var parameters = new DynamicParameters();
+            parameters.Add("@OrderId", orderId, DbType.Int32);
+            var rowsAffected = await conn.ExecuteAsync(
+                "[dbo].[DeleteOrder]",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
 
+            return rowsAffected;
+        }
     }
 }

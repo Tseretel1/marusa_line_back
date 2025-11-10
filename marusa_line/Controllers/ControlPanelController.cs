@@ -248,5 +248,23 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpDelete("delete-order")]
+        public async Task<IActionResult> deleteOrder(int orderId)
+        {
+            try
+            {
+                var posts = await _controlPanelService.DeleteOrder(orderId);
+                if (posts == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

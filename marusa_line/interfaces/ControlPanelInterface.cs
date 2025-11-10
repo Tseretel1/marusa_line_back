@@ -4,6 +4,7 @@
     {
         Task<int> ToggleOrderIsPaidAsync(int orderId,bool isPaid);
         Task<int> ChangeOrderStatus(int orderId, int isPaid);
+        Task<int> DeleteOrder(int orderId);
         Task<int> GetOrdersTotalCountAsync(bool? isPaid);
     }
 }
