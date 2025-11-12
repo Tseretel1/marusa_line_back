@@ -580,7 +580,10 @@ namespace marusa_line.services
                     ProductQuantity = order.ProductQuantity,
                     DeliveryType = order.DeliveryType,
                     Comment = order.Comment,
-                    FinalPrice = order.FinalPrice
+                    FinalPrice = order.FinalPrice,
+                    lng = order.lng,
+                    lat = order.lat,
+                    address = order.address,
                 },
                 commandType: CommandType.StoredProcedure
             );

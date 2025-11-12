@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("marusa_line")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d28864cb43a214b66d709efada58f91b5d9f5115")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14a163f8b4bad9336a918ee7cb881426e2cc5800")]
 [assembly: System.Reflection.AssemblyProductAttribute("marusa_line")]
 [assembly: System.Reflection.AssemblyTitleAttribute("marusa_line")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
