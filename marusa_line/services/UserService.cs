@@ -123,7 +123,7 @@ namespace marusa_line.services
 
             if (exists!=0)
             {
-                var UpdateUser = await conn.QuerySingleAsync<int>(
+                var NewUserId = await conn.QuerySingleAsync<int>(
                 "[dbo].[UpdateUser]",
                   param: new
                   {
@@ -133,7 +133,7 @@ namespace marusa_line.services
                   },
                   commandType: CommandType.StoredProcedure
                 );
-                return UpdateUser; 
+                return NewUserId; 
             }
             var newUserId = await conn.QuerySingleAsync<int>(
                 "[dbo].[InsertUser]",

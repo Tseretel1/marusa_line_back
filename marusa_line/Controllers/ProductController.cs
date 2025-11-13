@@ -3,6 +3,7 @@ using marusa_line.Dtos;
 using marusa_line.services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace marusa_line.Controllers
 {
@@ -15,6 +16,7 @@ namespace marusa_line.Controllers
         {
             _postService = postService;
         }
+
 
         [HttpGet("get-posts")]
         public async Task<IActionResult> GetPosts(int productId,int? userid)
@@ -182,7 +184,6 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpGet("like-post")]
         public async Task<IActionResult> LikePost(int userid, int productid)
         {
@@ -201,7 +202,6 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpPost("insert-order")]
         public async Task<IActionResult> insertOrder(InsertOrder order)
         {
@@ -317,8 +317,5 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-  
-
     }
 }
