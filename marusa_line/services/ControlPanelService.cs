@@ -145,5 +145,156 @@ namespace marusa_line.services
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<Post?> GetPostWithIdControlPanel(int id, int? userId = null)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var lookup = new Dictionary<int, Post>();
+
+            var result = await conn.QueryAsync<Post, Photos, Post>(
+                "[dbo].[GetProductsByIdForControlPanel]",
+                (post, photo) =>
+                {
+                    if (!lookup.TryGetValue(post.Id, out var existingPost))
+                    {
+                        existingPost = post;
+                        existingPost.Photos = new List<Photos>();
+                        lookup.Add(existingPost.Id, existingPost);
+                    }
+
+                    if (photo != null && photo.PhotoId > 0)
+                    {
+                        existingPost.Photos.Add(photo);
+                    }
+
+                    return existingPost;
+                },
+                param: new
+                {
+                    Id = id,
+                    UserId = userId
+                },
+                splitOn: "PhotoId",
+                commandType: CommandType.StoredProcedure
+            );
+            return lookup.Values.FirstOrDefault();
+        }
+        public async Task<int> InsertPostAsync(InsertPostDto dto)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            var postId = await conn.ExecuteScalarAsync<int>(
+                "[dbo].[InsertProduct]",
+                new
+                {
+                    dto.Title,
+                    dto.Description,
+                    dto.Price,
+                    dto.DiscountedPrice,
+                    dto.Quantity,
+                    dto.ProductTypeId
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            foreach (var photo in dto.Photos)
+            {
+                await conn.ExecuteAsync(
+                    "[dbo].[InsertPhoto]",
+                    new { ProductId = postId, photo.PhotoUrl },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            return postId;
+        }
+
+        public async Task<int> EditPostAsync(InsertPostDto dto)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            var postId = await conn.ExecuteScalarAsync<int>(
+                "[dbo].[EditProduct]",
+                new
+                {
+                    dto.Id,
+                    dto.Title,
+                    dto.Description,
+                    dto.Price,
+                    dto.DiscountedPrice,
+                    dto.Quantity,
+                    dto.ProductTypeId
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            foreach (var photo in dto.Photos)
+            {
+                await conn.ExecuteAsync(
+                    "[dbo].[InsertPhoto]",
+                    new { ProductId = postId, photo.PhotoUrl },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            return postId;
+        }
+
+        public async Task<int> RemoveProductById(int productId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@ProductId", productId, DbType.Int32);
+            var rowsAffected = await conn.QuerySingleAsync<int>(
+                "[dbo].[RemoveProductById]",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return rowsAffected;
+        }
+        public async Task<int> RevertProductById(int productId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@ProductId", productId, DbType.Int32);
+            var rowsAffected = await conn.QuerySingleAsync<int>(
+                "[dbo].[RevertProductById]",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return rowsAffected;
+        }
+
+        public async Task<DateTime> deletePhoto(int photoId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            var photoDeleted = await conn.ExecuteScalarAsync<DateTime>(
+                "[dbo].[DeletePhoto]",
+                new
+                {
+                    PhotoId = photoId,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return photoDeleted;
+        }
+
+        public async Task<int> GetLikeCount()
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            var count = await conn.QuerySingleAsync<int>(
+                "[dbo].[GetLikesCount]",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return count;
+        }
+
     }
 }

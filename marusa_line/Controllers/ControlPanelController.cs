@@ -43,7 +43,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.GetPostWithIdControlPanel(id, userid);
+                var posts = await _controlPanelService.GetPostWithIdControlPanel(id, userid);
 
                 if (posts == null)
                 {
@@ -63,7 +63,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.InsertPostAsync(dto);
+                var posts = await _controlPanelService.InsertPostAsync(dto);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -76,7 +76,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.EditPostAsync(dto);
+                var posts = await _controlPanelService.EditPostAsync(dto);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -89,7 +89,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.RemoveProductById(postid);
+                var posts = await _controlPanelService.RemoveProductById(postid);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -102,7 +102,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.RevertProductById(postid);
+                var posts = await _controlPanelService.RevertProductById(postid);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -115,7 +115,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.deletePhoto(photoId);
+                var posts = await _controlPanelService.deletePhoto(photoId);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -149,7 +149,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.GetLikeCount();
+                var posts = await _controlPanelService.GetLikeCount();
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -213,6 +213,8 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
         [HttpPost("change-order-ispaid")]
         public async Task<IActionResult> ChangeIsPaid(int orderId,bool ispaid)
         {
