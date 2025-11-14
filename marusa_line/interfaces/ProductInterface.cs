@@ -1,12 +1,12 @@
 ﻿using marusa_line.Models;
 using marusa_line.Dtos;
+using marusa_line.Dtos.ControlPanelDtos;
 
 namespace marusa_line.interfaces
 {
     public interface ProductInterface
     {
         Task<List<Post>> GetPostsAsync(int productTypeId, int? userid);
-        Task<List<Post>> GetPostsForAdminPanel(int productTypeId, int? userId);
         Task<List<Post>> GetUserLikedPosts(int userid);
         Task<List<GetOrdersDto>> GetUserOrders(int userId);
         Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order);

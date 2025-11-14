@@ -17,13 +17,13 @@ namespace marusa_line.Controllers
             _controlPanelService = controlPanelService;
         }
 
-        [HttpGet("get-products")]
-        public async Task<IActionResult> GetPostsForAdminPanel(int productId, int? userid)
+        [HttpPost("get-products")]
+        public async Task<IActionResult> GetPostsForAdminPanel(GetPostsDto getPosts)
         {
 
             try
             {
-                var posts = await _postService.GetPostsForAdminPanel(productId, userid);
+                var posts = await _controlPanelService.GetPostsForAdminPanel(getPosts);
 
                 if (posts == null || !posts.Any())
                 {

@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using marusa_line.Models;
 
 namespace marusa_line.services
 {
@@ -22,6 +23,26 @@ namespace marusa_line.services
             _config = config;
             _connectionString = config.GetConnectionString("marusa_line_connection");
         }
+
+        public async Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<Post>(
+                "[dbo].[GetProductsForControlPanel]",
+                new
+                {
+                    IsDeleted = getPosts.IsDeleted,
+                    PageNumber = getPosts.PageNumber,
+                    PageSize = getPosts.PageSize
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return result.ToList();
+        }
+
 
         public async Task<int> ToggleOrderIsPaidAsync(int orderId, bool isPaid)
         {
