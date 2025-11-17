@@ -16,5 +16,6 @@
         public int TotalDeletedProducts { get; set; }
         public List<Photos> Photos { get; set; } = new List<Photos>();
         public string? photoUrl { get; set; }
+        public int totalCount { get; set; }
     }
 }

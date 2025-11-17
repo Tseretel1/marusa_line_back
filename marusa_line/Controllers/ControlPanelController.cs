@@ -125,26 +125,6 @@ namespace marusa_line.Controllers
             }
         }
 
-        [HttpGet("get-product-types")]
-        public async Task<IActionResult> GetProductTypes()
-        {
-            try
-            {
-                var posts = await _postService.GetProductTypes();
-
-                if (posts == null || !posts.Any())
-                {
-                    return NotFound();
-                }
-
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpGet("get-like-count")]
         public async Task<IActionResult> GetLikeCount()
         {
@@ -304,6 +284,89 @@ namespace marusa_line.Controllers
                     return Ok(null);
                 }
                 return Ok(token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-product-types")]
+        public async Task<IActionResult> GetProductTypes()
+        {
+            try
+            {
+                var posts = await _postService.GetProductTypes();
+
+                if (posts == null || !posts.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("insert-product-type")]
+        public async Task<IActionResult> InsertProductType(string productType)
+        {
+            try
+            {
+                var productTypes = await _controlPanelService.InsertProducType(productType);
+                if (productTypes == null)
+                {
+                    return Ok(null);
+                }
+                var returnObj = new
+                {
+                    productTypes = productTypes,
+                };
+                return Ok(returnObj);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("edit-product-type")]
+        public async Task<IActionResult> EditProductType(int id, string productType)
+        {
+            try
+            {
+                var productTypes = await _controlPanelService.EditProductType(id,productType);
+                if (productTypes == null)
+                {
+                    return Ok(null);
+                }
+                var returnObj = new
+                {
+                    productTypes = productTypes,
+                };
+                return Ok(returnObj);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("delete-product-type")]
+        public async Task<IActionResult> DeleteProductType(int id)
+        {
+            try
+            {
+                var productTypes = await _controlPanelService.DeleteProductType(id);
+                if (productTypes == null)
+                {
+                    return Ok(null);
+                }
+                var returnObj = new
+                {
+                    productTypes = productTypes,
+                };
+                return Ok(returnObj);
             }
             catch (Exception ex)
             {

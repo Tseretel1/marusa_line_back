@@ -6,7 +6,7 @@ namespace marusa_line.interfaces
 {
     public interface ProductInterface
     {
-        Task<List<Post>> GetPostsAsync(int productTypeId, int? userid);
+        Task<object> GetPostsAsync(GetProductDto dto);
         Task<List<Post>> GetUserLikedPosts(int userid);
         Task<List<GetOrdersDto>> GetUserOrders(int userId);
         Task<OrderDetailsDto> GetOrderById(int userId);

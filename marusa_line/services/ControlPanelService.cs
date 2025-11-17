@@ -353,5 +353,52 @@ namespace marusa_line.services
             return result;
         }
 
+        public async Task<List<ProductTypes>> InsertProducType(string productType)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<ProductTypes>(
+                "[dbo].[AddProductType]",
+                new
+                {
+                    productType = productType,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result.ToList();
+        }
+
+        public async Task<List<ProductTypes>> EditProductType(int id, string productType)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<ProductTypes>(
+                "[dbo].[EditProductType]",
+                new
+                {
+                    Id = id,
+                    productType = productType,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result.ToList();
+        }
+        public async Task<List<ProductTypes>> DeleteProductType(int id)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<ProductTypes>(
+                "[dbo].[DeleteProductType]",
+                new
+                {
+                    Id = id,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result.ToList();
+        }
     }
 }

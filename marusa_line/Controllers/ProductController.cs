@@ -18,15 +18,15 @@ namespace marusa_line.Controllers
         }
 
 
-        [HttpGet("get-posts")]
-        public async Task<IActionResult> GetPosts(int productId,int? userid)
+        [HttpPost("get-posts")]
+        public async Task<IActionResult> GetPosts(GetProductDto dto)
         {
 
             try
             {
-                var posts = await _postService.GetPostsAsync(productId,userid); 
+                var posts = await _postService.GetPostsAsync(dto); 
 
-                if (posts == null || !posts.Any())
+                if (posts == null)
                 {
                     return Ok(null);
                 }

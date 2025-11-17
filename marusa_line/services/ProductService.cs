@@ -17,41 +17,32 @@ namespace marusa_line.services
         {
             _connectionString = config.GetConnectionString("marusa_line_connection");
         }
-        public async Task<List<Post>> GetPostsAsync(int productTypeId, int? userId)
+        public async Task<object> GetPostsAsync(GetProductDto dto)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            var lookup = new Dictionary<int, Post>();
-
-            var result = await conn.QueryAsync<Post, Photos, Post>(
+            using var multi = await conn.QueryMultipleAsync(
                 "[dbo].[GetProducts]",
-                (post, photo) =>
+                new
                 {
-                    if (!lookup.TryGetValue(post.Id, out var existingPost))
-                    {
-                        existingPost = post;
-                        existingPost.Photos = new List<Photos>();
-                        lookup.Add(existingPost.Id, existingPost);
-                    }
-
-                    if (photo != null && photo.PhotoId != null)
-                    {
-                        existingPost.Photos.Add(photo);
-                    }
-
-                    return existingPost;
+                    ProductTypeId = dto.productTypeId,
+                    UserId = dto.userId,
+                    PageNumber = dto.pageNumber,
+                    PageSize = dto.pageSize
                 },
-                param: new
-                {
-                    ProductId = productTypeId,
-                    UserId = userId
-                },
-                splitOn: "PhotoId",
                 commandType: CommandType.StoredProcedure
             );
 
-            return lookup.Values.ToList();
+            var products = (await multi.ReadAsync<Post>()).ToList();
+            var totalCount = await multi.ReadFirstAsync<int>();
+
+            return new
+            {
+                Products = products,
+                TotalCount = totalCount
+            };
+
         }
 
         public async Task<List<Post>> GetPostsForAdminPanel(int productTypeId, int? userId)
