@@ -9,9 +9,7 @@ namespace marusa_line.interfaces
         Task<List<Post>> GetPostsAsync(int productTypeId, int? userid);
         Task<List<Post>> GetUserLikedPosts(int userid);
         Task<List<GetOrdersDto>> GetUserOrders(int userId);
-        Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order);
         Task<OrderDetailsDto> GetOrderById(int userId);
-        
         Task<List<Photos>> GetAllPhotos();
         Task<bool> likeProduct(int userid, int productId);
         Task<List<Post>> GetMostDiscountedPosts(int? userid);

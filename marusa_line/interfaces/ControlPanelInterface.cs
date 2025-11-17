@@ -1,12 +1,14 @@
 ﻿using Azure.Identity;
 using marusa_line.Dtos;
 using marusa_line.Dtos.ControlPanelDtos;
+using marusa_line.Dtos.ControlPanelDtos.Dashboard;
 using marusa_line.Models;
 
 namespace marusa_line.interfaces
 {
     public interface ControlPanelInterface
     {
+        Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order);
         Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts);
         Task<int> ToggleOrderIsPaidAsync(int orderId,bool isPaid);
         Task<int> ChangeOrderStatus(int orderId, int isPaid);
@@ -18,9 +20,8 @@ namespace marusa_line.interfaces
         Task<int> EditPostAsync(InsertPostDto dto);
         Task<int> RemoveProductById(int postId);
         Task<int> RevertProductById(int postId);
-
         Task<DateTime> deletePhoto(int photoId);
         Task<int> GetLikeCount();
-
+        Task<DashboardStats> GetDashboardStatistics(GetDahsboard stats);
     }
 }

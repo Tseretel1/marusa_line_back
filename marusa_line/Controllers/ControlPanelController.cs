@@ -1,5 +1,6 @@
 ﻿using marusa_line.Dtos;
 using marusa_line.Dtos.ControlPanelDtos;
+using marusa_line.Dtos.ControlPanelDtos.Dashboard;
 using marusa_line.interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -163,7 +164,7 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var orders = await _postService.GetOrdersControlPanel(dto);
+                var orders = await _controlPanelService.GetOrdersControlPanel(dto);
                 var totalCount = await _controlPanelService.GetOrdersTotalCountAsync(dto.IsPaid);
 
                 if (orders == null || !orders.Any())
@@ -174,6 +175,27 @@ namespace marusa_line.Controllers
                 {
                     orders = orders,
                     totalCount = totalCount,
+                };
+                return Ok(returnObj);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("get-statistics")]
+        public async Task<IActionResult> GetStatistics(GetDahsboard dto)
+        {
+            try
+            {
+                var statistics = await _controlPanelService.GetDashboardStatistics(dto);
+                if (statistics == null)
+                {
+                    return Ok(null);
+                }
+                var returnObj = new
+                {
+                    statistics = statistics,
                 };
                 return Ok(returnObj);
             }

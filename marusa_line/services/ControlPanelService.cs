@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using marusa_line.Models;
+using marusa_line.Dtos.ControlPanelDtos.Dashboard;
 
 namespace marusa_line.services
 {
@@ -22,6 +23,46 @@ namespace marusa_line.services
         {
             _config = config;
             _connectionString = config.GetConnectionString("marusa_line_connection");
+        }
+
+        public async Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var lookup = new Dictionary<int, OrderControlPanel>();
+
+            var result = await conn.QueryAsync<OrderControlPanel, Photos, User, OrderControlPanel>(
+                "[dbo].[GetAllOrdersControlPanel]",
+                (orderControl, photo, user) =>
+                {
+                    if (!lookup.TryGetValue(orderControl.OrderId, out var existingOrder))
+                    {
+                        existingOrder = orderControl;
+                        existingOrder.Photos = new List<Photos>();
+                        existingOrder.User = user;
+                        lookup.Add(existingOrder.OrderId, existingOrder);
+                    }
+
+                    if (photo != null && photo.PhotoId != 0)
+                    {
+                        existingOrder.Photos.Add(photo);
+                    }
+
+                    return existingOrder;
+                },
+                param: new
+                {
+                    IsPaid = order.IsPaid,
+                    OrderId = order.OrderId,
+                    PageNumber = order.PageNumber,
+                    PageSize = order.PageSize,
+                },
+                splitOn: "PhotoId,UserId",
+                commandType: CommandType.StoredProcedure
+            );
+
+            return lookup.Values.ToList();
         }
 
         public async Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts)
@@ -292,8 +333,24 @@ namespace marusa_line.services
                 "[dbo].[GetLikesCount]",
                 commandType: CommandType.StoredProcedure
             );
-
             return count;
+        }
+
+        public async Task<DashboardStats> GetDashboardStatistics(GetDahsboard stats)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QuerySingleAsync<DashboardStats>(
+                "[dbo].[GetOrderStatistics]",
+                new
+                {
+                    StartDate = stats.StartDate,
+                    EndDate = stats.EndDate
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result;
         }
 
     }
