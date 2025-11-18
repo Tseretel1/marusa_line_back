@@ -1,6 +1,7 @@
 ﻿using marusa_line.Dtos;
 using marusa_line.Dtos.ControlPanelDtos;
 using marusa_line.Dtos.ControlPanelDtos.Dashboard;
+using marusa_line.Dtos.ControlPanelDtos.User;
 using marusa_line.interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -373,5 +374,57 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("get-users")]
+        public async Task<IActionResult> GetUsers(GetUserFilteredDto dto)
+        {
+            try
+            {
+                var users = await _controlPanelService.GetUsersList(dto);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-user-by-id")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            try
+            {
+                var user = await _controlPanelService.GetUser(id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut("update-user-role")]
+        public async Task<IActionResult> UpdateUserRole(int id,string role)
+        {
+            try
+            {
+                var user = await _controlPanelService.UpdateUserRole(id, role);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
     }
 }

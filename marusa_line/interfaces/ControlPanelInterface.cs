@@ -2,6 +2,7 @@
 using marusa_line.Dtos;
 using marusa_line.Dtos.ControlPanelDtos;
 using marusa_line.Dtos.ControlPanelDtos.Dashboard;
+using marusa_line.Dtos.ControlPanelDtos.User;
 using marusa_line.Models;
 
 namespace marusa_line.interfaces
@@ -26,5 +27,8 @@ namespace marusa_line.interfaces
         Task<List<ProductTypes>> InsertProducType(string productType);
         Task<List<ProductTypes>> EditProductType(int id,string productType);
         Task<List<ProductTypes>> DeleteProductType(int id);
+        Task<GetUserDto> GetUser(int id);
+        Task<int> UpdateUserRole(int userId, string role);
+        Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto);
     }
 }

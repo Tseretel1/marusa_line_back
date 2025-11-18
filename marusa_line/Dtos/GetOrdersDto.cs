@@ -42,6 +42,9 @@ namespace marusa_line.Dtos
         public string? Comment { get; set; }
         public decimal FinalPrice { get; set; }
         public User user { get; set; }
+        public string Lng { get; set; }
+        public string Lat { get; set; }
+        public string Address { get; set; }
 
     }
 }

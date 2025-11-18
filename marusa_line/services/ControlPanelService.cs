@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using marusa_line.Models;
 using marusa_line.Dtos.ControlPanelDtos.Dashboard;
+using marusa_line.Dtos.ControlPanelDtos.User;
 
 namespace marusa_line.services
 {
@@ -400,5 +401,63 @@ namespace marusa_line.services
             );
             return result.ToList();
         }
+
+        public async Task<GetUserDto> GetUser(int id)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QuerySingleAsync<GetUserDto>(
+                "[dbo].[GetuserById]",
+                new
+                {
+                    Id = id,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result;
+        }
+
+        public async Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            using var multi = await conn.QueryMultipleAsync(
+                "[dbo].[GetUsersList]",
+                new
+                {
+                    UserId = dto.UserId,
+                    IsBlocked = dto.IsBlocked,
+                    PageNumber = dto.PageNumber,
+                    PageSize = dto.PageSize
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            var users = (await multi.ReadAsync<GetUserDto>()).ToList();
+            var totalCount = await multi.ReadFirstAsync<int>();
+            users[0].totalCount = totalCount;
+
+            return users;
+        }
+
+        public async Task<int> UpdateUserRole(int userId, string role)
+        {
+            using var conn = new SqlConnection(_connectionString);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("UserId", userId);
+            parameters.Add("Role", role);
+            parameters.Add("ReturnValue", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+            await conn.ExecuteAsync(
+                "[dbo].[UpdateRole]",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+            return parameters.Get<int>("ReturnValue");
+        }
+
     }
 }
