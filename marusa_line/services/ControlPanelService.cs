@@ -86,7 +86,7 @@ namespace marusa_line.services
         }
 
 
-        public async Task<int> ToggleOrderIsPaidAsync(int orderId, bool isPaid)
+        public async Task<int> ToggleOrderIsPaidAsync(int orderId, bool isPaid,int quantity)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -94,6 +94,7 @@ namespace marusa_line.services
             var parameters = new DynamicParameters();
             parameters.Add("@OrderId", orderId, DbType.Int32);
             parameters.Add("@Paid", isPaid, DbType.Boolean);
+            parameters.Add("@OrderCount", quantity, DbType.Int32);
 
             var rowsAffected = await conn.ExecuteAsync(
                 "[dbo].[ChangeOrderIsPaid]",

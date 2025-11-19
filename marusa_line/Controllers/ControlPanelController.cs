@@ -219,11 +219,11 @@ namespace marusa_line.Controllers
 
 
         [HttpPost("change-order-ispaid")]
-        public async Task<IActionResult> ChangeIsPaid(int orderId,bool ispaid)
+        public async Task<IActionResult> ChangeIsPaid(int orderId,bool ispaid, int quantity)
         {
             try
             {
-                var posts = await _controlPanelService.ToggleOrderIsPaidAsync(orderId,ispaid);
+                var posts = await _controlPanelService.ToggleOrderIsPaidAsync(orderId,ispaid, quantity);
                 if (posts == null)
                 {
                     return NotFound();

@@ -11,7 +11,7 @@ namespace marusa_line.interfaces
     {
         Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order);
         Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts);
-        Task<int> ToggleOrderIsPaidAsync(int orderId,bool isPaid);
+        Task<int> ToggleOrderIsPaidAsync(int orderId,bool isPaid, int quantity);
         Task<int> ChangeOrderStatus(int orderId, int isPaid);
         Task<int> DeleteOrder(int orderId);
         Task<int> GetOrdersTotalCountAsync(bool? isPaid);
