@@ -54,6 +54,7 @@ namespace marusa_line.services
                 },
                 param: new
                 {
+                    UserId = order.UserId,
                     IsPaid = order.IsPaid,
                     OrderId = order.OrderId,
                     PageNumber = order.PageNumber,
