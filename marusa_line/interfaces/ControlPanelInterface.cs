@@ -30,6 +30,9 @@ namespace marusa_line.interfaces
         Task<List<ProductTypes>> EditProductType(int id,string productType);
         Task<List<ProductTypes>> DeleteProductType(int id);
         Task<GetUserDto> GetUser(int id);
+        Task<List<GetUserDto>>SearchUserByName(string search);
+        Task<List<GetUserDto>> SearchUserByEmail(string search);
+
         Task<int> UpdateUserRole(int userId, string role);
         Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto);
     }

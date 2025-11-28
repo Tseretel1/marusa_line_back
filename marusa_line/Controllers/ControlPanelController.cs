@@ -441,6 +441,44 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("get-user-by-name")]
+        public async Task<IActionResult> GetsuerByName(string search)
+        {
+            try
+            {
+                var statistics = await _controlPanelService.SearchUserByName(search);
+                if (statistics == null)
+                {
+                    return Ok(null);
+                }
+
+                return Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-user-by-email")]
+        public async Task<IActionResult> GetsuerByEmail(string search)
+        {
+            try
+            {
+                var statistics = await _controlPanelService.SearchUserByEmail(search);
+                if (statistics == null)
+                {
+                    return Ok(null);
+                }
+
+                return Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut("update-user-role")]
         public async Task<IActionResult> UpdateUserRole(int id,string role)
         {

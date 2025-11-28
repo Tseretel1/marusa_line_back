@@ -460,6 +460,36 @@ namespace marusa_line.services
             );
             return result;
         }
+        public async Task<List<GetUserDto>> SearchUserByName(string search)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<GetUserDto>(
+                "[dbo].[spSearchUsersByName]",
+                new
+                {
+                    SearchText = search,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result.ToList();
+        }
+        public async Task<List<GetUserDto>> SearchUserByEmail(string search)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<GetUserDto>(
+                "[dbo].[spSearchUsersByEmail]",
+                new
+                {
+                    SearchText = search,
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result.ToList();
+        }
 
         public async Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto)
         {
