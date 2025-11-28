@@ -24,6 +24,7 @@ namespace marusa_line.interfaces
         Task<DateTime> deletePhoto(int photoId);
         Task<int> GetLikeCount();
         Task<DashboardStats> GetDashboardStatistics(GetDahsboard stats);
+        Task<DashboardStatsByYear> GetDashboard(int year);
         Task<List<ProductTypes>> InsertProducType(string productType);
         Task<List<ProductTypes>> EditProductType(int id,string productType);
         Task<List<ProductTypes>> DeleteProductType(int id);

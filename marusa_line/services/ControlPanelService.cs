@@ -355,6 +355,30 @@ namespace marusa_line.services
             );
             return result;
         }
+        public async Task<DashboardStatsByYear> GetDashboard(int year)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var statsByMonth = (await conn.QueryAsync<DashboardStatsByMonths>(
+                "[dbo].[spGetMonthlyOrderStats]",
+                new { Year = year },
+                commandType: CommandType.StoredProcedure
+            )).ToList();
+
+            var YearStat = await conn.QuerySingleAsync<DashboardYearSum>(
+                "[dbo].[spGetYearlyOrderStats]",
+                new { Year = year },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return new DashboardStatsByYear
+            {
+                statsByMonth = statsByMonth,
+                YearStat = YearStat
+            };
+        }
+
 
         public async Task<List<ProductTypes>> InsertProducType(string productType)
         {

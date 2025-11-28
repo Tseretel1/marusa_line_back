@@ -185,6 +185,24 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("get-dashboard-by-year")]
+        public async Task<IActionResult> GetDashboard(int year)
+        {
+            try
+            {
+                var statistics = await _controlPanelService.GetDashboard(year);
+                if (statistics == null)
+                {
+                    return Ok(null);
+                }
+
+                return Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet("get-order-details")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
