@@ -379,6 +379,23 @@ namespace marusa_line.services
             };
         }
 
+        public async Task<List<SoldProductTypes>> GetSoldProductTypes(int year, int? month)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<SoldProductTypes>(
+                "[dbo].[spGetProductTypeSalesStats]",
+                new
+                {
+                    Year = year,
+                    Month= month
+                },
+                commandType: CommandType.StoredProcedure
+            );
+            return result.ToList();
+        }
+  
 
         public async Task<List<ProductTypes>> InsertProducType(string productType)
         {

@@ -25,6 +25,7 @@ namespace marusa_line.interfaces
         Task<int> GetLikeCount();
         Task<DashboardStats> GetDashboardStatistics(GetDahsboard stats);
         Task<DashboardStatsByYear> GetDashboard(int year);
+        Task<List<SoldProductTypes>> GetSoldProductTypes(int year,int? month);
         Task<List<ProductTypes>> InsertProducType(string productType);
         Task<List<ProductTypes>> EditProductType(int id,string productType);
         Task<List<ProductTypes>> DeleteProductType(int id);

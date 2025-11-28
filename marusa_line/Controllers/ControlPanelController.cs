@@ -203,7 +203,24 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("get-sold-producttypes")]
+        public async Task<IActionResult> GetSoldProductTypes(int year, int? month)
+        {
+            try
+            {
+                var statistics = await _controlPanelService.GetSoldProductTypes(year,month);
+                if (statistics == null)
+                {
+                    return Ok(null);
+                }
 
+                return Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet("get-order-details")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
