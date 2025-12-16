@@ -498,6 +498,21 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut("update-product-order-allowed")]
+        public async Task<IActionResult> UpdateProductOderAllowed(int productID, bool allowed)
+        {
+            try
+            {
+                var user = await _controlPanelService.UpdateProductOderAllowed(productID, allowed);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         
+
+
     }
 }

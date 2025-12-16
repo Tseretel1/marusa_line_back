@@ -515,6 +515,21 @@ namespace marusa_line.services
             return users;
         }
 
+        public async Task<int> UpdateProductOderAllowed(int productID, bool allowed)
+        {
+            using var conn = new SqlConnection(_connectionString);
+
+            var result = await conn.QueryAsync<int>(
+                "[dbo].[UpdateProductOrderAllowed]",
+                new
+                {
+                    ProductId = productID,
+                    Allowed = allowed
+                },
+                commandType: CommandType.StoredProcedure
+            ) ;
+            return 0;
+        }
         public async Task<int> UpdateUserRole(int userId, string role)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -531,6 +546,5 @@ namespace marusa_line.services
             );
             return parameters.Get<int>("ReturnValue");
         }
-
     }
 }

@@ -34,6 +34,7 @@ namespace marusa_line.interfaces
         Task<List<GetUserDto>> SearchUserByEmail(string search);
 
         Task<int> UpdateUserRole(int userId, string role);
+        Task<int> UpdateProductOderAllowed(int productID, bool allowed);
         Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto);
     }
 }
