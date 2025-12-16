@@ -238,7 +238,8 @@ namespace marusa_line.services
                     dto.Price,
                     dto.DiscountedPrice,
                     dto.Quantity,
-                    dto.ProductTypeId
+                    dto.ProductTypeId,
+                    dto.OrderNotAllowed,
                 },
                 commandType: CommandType.StoredProcedure
             );
