@@ -1,6 +1,7 @@
 ﻿using marusa_line.Dtos;
 using marusa_line.Dtos.ControlPanelDtos;
 using marusa_line.Dtos.ControlPanelDtos.Dashboard;
+using marusa_line.Dtos.ControlPanelDtos.ShopDtos;
 using marusa_line.Dtos.ControlPanelDtos.User;
 using marusa_line.interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -511,8 +512,47 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
 
+        [HttpGet("get-shop-stats")]
+        public async Task<IActionResult> UpdateProductOderAllowed(int shopId)
+        {
+            try
+            {
+                var user = await _controlPanelService.GetShopStats(shopId);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
+        [HttpGet("get-shop-by-id")]
+        public async Task<IActionResult> GetShopbyId(int shopId)
+        {
+            try
+            {
+                var user = await _controlPanelService.GetShopById(shopId);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("update-shop")]
+        public async Task<IActionResult> UpdateShop([FromBody] ShopDto shop)
+        {
+            try
+            {
+                var user = await _controlPanelService.UpdateShopAsync(shop);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -2,6 +2,8 @@
 using marusa_line.Dtos;
 using marusa_line.Dtos.ControlPanelDtos;
 using marusa_line.Dtos.ControlPanelDtos.Dashboard;
+using marusa_line.Dtos.ControlPanelDtos.NewFolder;
+using marusa_line.Dtos.ControlPanelDtos.ShopDtos;
 using marusa_line.Dtos.ControlPanelDtos.User;
 using marusa_line.Models;
 
@@ -36,5 +38,9 @@ namespace marusa_line.interfaces
         Task<int> UpdateUserRole(int userId, string role);
         Task<int> UpdateProductOderAllowed(int productID, bool allowed);
         Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto);
+
+        Task<ShopStatsDto> GetShopStats(int shopId);
+        Task<ShopDto?> GetShopById(int shopId);
+        Task<bool> UpdateShopAsync(ShopDto shop);
     }
 }

@@ -11,6 +11,8 @@ using System.Text;
 using marusa_line.Models;
 using marusa_line.Dtos.ControlPanelDtos.Dashboard;
 using marusa_line.Dtos.ControlPanelDtos.User;
+using marusa_line.Dtos.ControlPanelDtos.NewFolder;
+using marusa_line.Dtos.ControlPanelDtos.ShopDtos;
 
 namespace marusa_line.services
 {
@@ -546,6 +548,50 @@ namespace marusa_line.services
                 commandType: CommandType.StoredProcedure
             );
             return parameters.Get<int>("ReturnValue");
+        }
+        public async Task<ShopStatsDto> GetShopStats(int shopId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+
+            return await conn.QuerySingleAsync<ShopStatsDto>(
+                "[dbo].[spGetShopStats]",
+                new { ShopId = shopId },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<ShopDto?> GetShopById(int shopId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+
+            return await conn.QuerySingleOrDefaultAsync<ShopDto>(
+                "[dbo].[spGetShopById]",
+                new { ShopId = shopId },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+        public async Task<bool> UpdateShopAsync(ShopDto shop)
+        {
+            using var conn = new SqlConnection(_connectionString);
+
+            var result = await conn.QuerySingleAsync<bool>(
+                "[dbo].[spUpdateShop]",
+                new
+                {
+                    ShopId = shop.Id,
+                    Name = shop.Name,
+                    Logo = shop.Logo,
+                    Location = shop.Location,
+                    Gmail = shop.Gmail,
+                    Subscription = shop.Subscription,
+                    Instagram = shop.Instagram,
+                    Facebook = shop.Facebook,
+                    Titkok = shop.Titkok
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return result;
         }
     }
 }
