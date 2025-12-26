@@ -455,5 +455,18 @@ namespace marusa_line.services
 
             return parameters.Get<int>("ReturnVal");
         }
+
+        public async Task<int> FollowShop(int userId, int shopId)
+        {
+
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            var isLiked = await conn.QuerySingleAsync<int>(
+                "[dbo].[LikePost]",
+                param: new { UserId = userId, ShopId = shopId},
+                commandType: CommandType.StoredProcedure
+            );
+            return isLiked;
+        }
     }
 }

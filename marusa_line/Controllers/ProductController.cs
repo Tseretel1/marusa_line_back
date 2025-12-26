@@ -317,5 +317,18 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("follow-shop")]
+        public async Task<IActionResult> FollowShop(int userId,int shopId)
+        {
+            try
+            {
+                var posts = await _postService.FollowShop(userId, shopId);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
