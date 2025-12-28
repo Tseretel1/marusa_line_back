@@ -28,6 +28,7 @@ namespace marusa_line.services
                 {
                     ProductTypeId = dto.productTypeId,
                     UserId = dto.userId,
+                    ShopId = dto.shopId,
                     PageNumber = dto.pageNumber,
                     PageSize = dto.pageSize
                 },

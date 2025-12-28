@@ -30,7 +30,7 @@ namespace marusa_line.Controllers
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok();
                 }
 
                 return Ok(posts);

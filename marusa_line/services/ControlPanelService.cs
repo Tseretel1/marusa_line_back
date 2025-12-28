@@ -78,6 +78,7 @@ namespace marusa_line.services
                 "[dbo].[GetProductsForControlPanel]",
                 new
                 {
+                    ProductTypeId = getPosts.ProductTypeId,
                     IsDeleted = getPosts.IsDeleted,
                     PageNumber = getPosts.PageNumber,
                     PageSize = getPosts.PageSize
