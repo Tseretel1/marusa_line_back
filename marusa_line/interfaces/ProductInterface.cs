@@ -24,6 +24,6 @@ namespace marusa_line.interfaces
         Task<UserOptionalFields> GetUser(int userid);
         Task<int> InsertLocation(int userId, string location);
         Task<int> InsertPhoneNumber(int userId, string phoneNumber);
-        Task<int> FollowShop(int userId, int shopId);
+        Task FollowShop(int userId, int shopId);
     }
 }

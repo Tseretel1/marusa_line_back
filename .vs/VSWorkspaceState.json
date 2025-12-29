@@ -8,6 +8,6 @@
     "\\marusa_line\\Dtos\\ControlPanelDtos\\User",
     "\\marusa_line\\services"
   ],
-  "SelectedNode": "\\marusa_line.sln",
+  "SelectedNode": "\\marusa_line\\services\\ControlPanelService.cs",
   "PreviewInSolutionExplorer": false
 }

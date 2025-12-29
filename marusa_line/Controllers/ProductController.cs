@@ -322,8 +322,8 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var posts = await _postService.FollowShop(userId, shopId);
-                return Ok(posts);
+                await _postService.FollowShop(userId, shopId);
+                return Ok();
             }
             catch (Exception ex)
             {
