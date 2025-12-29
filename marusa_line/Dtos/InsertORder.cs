@@ -8,5 +8,8 @@
         public string DeliveryType { get; set; }
         public string Comment { get; set; }
         public int FinalPrice { get; set; }
+        public string? lng { get; set; }
+        public string? lat { get; set; }
+        public string? address{ get; set; }
     }
 }

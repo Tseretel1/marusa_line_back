@@ -3,6 +3,7 @@ using marusa_line.Dtos;
 using marusa_line.services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace marusa_line.Controllers
 {
@@ -16,15 +17,16 @@ namespace marusa_line.Controllers
             _postService = postService;
         }
 
-        [HttpGet("get-posts")]
-        public async Task<IActionResult> GetPosts(int productId,int? userid)
+
+        [HttpPost("get-posts")]
+        public async Task<IActionResult> GetPosts(GetProductDto dto)
         {
 
             try
             {
-                var posts = await _postService.GetPostsAsync(productId,userid); 
+                var posts = await _postService.GetPostsAsync(dto); 
 
-                if (posts == null || !posts.Any())
+                if (posts == null)
                 {
                     return Ok(null);
                 }
@@ -182,7 +184,6 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpGet("like-post")]
         public async Task<IActionResult> LikePost(int userid, int productid)
         {
@@ -201,7 +202,6 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpPost("insert-order")]
         public async Task<IActionResult> insertOrder(InsertOrder order)
         {
@@ -317,8 +317,18 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-  
-
+        [HttpPost("follow-shop")]
+        public async Task<IActionResult> FollowShop(int userId,int shopId)
+        {
+            try
+            {
+                await _postService.FollowShop(userId, shopId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

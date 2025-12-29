@@ -17,41 +17,33 @@ namespace marusa_line.services
         {
             _connectionString = config.GetConnectionString("marusa_line_connection");
         }
-        public async Task<List<Post>> GetPostsAsync(int productTypeId, int? userId)
+        public async Task<object> GetPostsAsync(GetProductDto dto)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            var lookup = new Dictionary<int, Post>();
-
-            var result = await conn.QueryAsync<Post, Photos, Post>(
+            using var multi = await conn.QueryMultipleAsync(
                 "[dbo].[GetProducts]",
-                (post, photo) =>
+                new
                 {
-                    if (!lookup.TryGetValue(post.Id, out var existingPost))
-                    {
-                        existingPost = post;
-                        existingPost.Photos = new List<Photos>();
-                        lookup.Add(existingPost.Id, existingPost);
-                    }
-
-                    if (photo != null && photo.PhotoId != null)
-                    {
-                        existingPost.Photos.Add(photo);
-                    }
-
-                    return existingPost;
+                    ProductTypeId = dto.productTypeId,
+                    UserId = dto.userId,
+                    ShopId = dto.shopId,
+                    PageNumber = dto.pageNumber,
+                    PageSize = dto.pageSize
                 },
-                param: new
-                {
-                    ProductId = productTypeId,
-                    UserId = userId
-                },
-                splitOn: "PhotoId",
                 commandType: CommandType.StoredProcedure
             );
 
-            return lookup.Values.ToList();
+            var products = (await multi.ReadAsync<Post>()).ToList();
+            var totalCount = await multi.ReadFirstAsync<int>();
+
+            return new
+            {
+                Products = products,
+                TotalCount = totalCount
+            };
+
         }
 
         public async Task<List<Post>> GetPostsForAdminPanel(int productTypeId, int? userId)
@@ -123,45 +115,6 @@ namespace marusa_line.services
                     UserId = userId
                 },
                 splitOn: "PhotoId",
-                commandType: CommandType.StoredProcedure
-            );
-
-            return lookup.Values.ToList();
-        }
-        public async Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            var lookup = new Dictionary<int, OrderControlPanel>();
-
-            var result = await conn.QueryAsync<OrderControlPanel, Photos, User, OrderControlPanel>(
-                "[dbo].[GetAllOrdersControlPanel]",
-                (orderControl, photo, user) =>
-                {
-                    if (!lookup.TryGetValue(orderControl.OrderId, out var existingOrder))
-                    {
-                        existingOrder = orderControl;
-                        existingOrder.Photos = new List<Photos>();
-                        existingOrder.User = user;
-                        lookup.Add(existingOrder.OrderId, existingOrder);
-                    }
-
-                    if (photo != null && photo.PhotoId != 0)
-                    {
-                        existingOrder.Photos.Add(photo);
-                    }
-
-                    return existingOrder;
-                },
-                param: new
-                {
-                    IsPaid = order.IsPaid,
-                    OrderId = order.OrderId,
-                    PageNumber = order.PageNumber,
-                    PageSize = order.PageSize,
-                },
-                splitOn: "PhotoId,UserId",
                 commandType: CommandType.StoredProcedure
             );
 
@@ -374,45 +327,6 @@ namespace marusa_line.services
         }
 
 
-
-        public async Task<Post?> GetPostWithIdControlPanel(int id, int? userId = null)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            var lookup = new Dictionary<int, Post>();
-
-            var result = await conn.QueryAsync<Post, Photos, Post>(
-                "[dbo].[GetProductsByIdForControlPanel]",
-                (post, photo) =>
-                {
-                    if (!lookup.TryGetValue(post.Id, out var existingPost))
-                    {
-                        existingPost = post;
-                        existingPost.Photos = new List<Photos>();
-                        lookup.Add(existingPost.Id, existingPost);
-                    }
-
-                    if (photo != null && photo.PhotoId > 0)
-                    {
-                        existingPost.Photos.Add(photo);
-                    }
-
-                    return existingPost;
-                },
-                param: new
-                {
-                    Id = id,
-                    UserId = userId
-                },
-                splitOn: "PhotoId",
-                commandType: CommandType.StoredProcedure
-            );
-            return lookup.Values.FirstOrDefault();
-        }
-
-
-
         public async Task<List<Photos>> GetAllPhotos()
         {
             using var conn = new SqlConnection(_connectionString);
@@ -440,107 +354,6 @@ namespace marusa_line.services
             return isLiked;
         }
 
-        public async Task<int> InsertPostAsync(InsertPostDto dto)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-            var postId = await conn.ExecuteScalarAsync<int>(
-                "[dbo].[InsertProduct]",
-                new
-                {
-                    dto.Title,
-                    dto.Description,
-                    dto.Price,
-                    dto.DiscountedPrice,
-                    dto.Quantity,
-                    dto.ProductTypeId
-                },
-                commandType: CommandType.StoredProcedure
-            );
-            foreach (var photo in dto.Photos)
-            {
-                await conn.ExecuteAsync(
-                    "[dbo].[InsertPhoto]",
-                    new { ProductId = postId, photo.PhotoUrl },
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            return postId;
-        }
-        public async Task<int> EditPostAsync(InsertPostDto dto)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-            var postId = await conn.ExecuteScalarAsync<int>(
-                "[dbo].[EditProduct]",
-                new
-                {
-                    dto.Id,
-                    dto.Title,
-                    dto.Description,
-                    dto.Price,
-                    dto.DiscountedPrice,
-                    dto.Quantity,
-                    dto.ProductTypeId
-                },
-                commandType: CommandType.StoredProcedure
-            );
-            foreach (var photo in dto.Photos)
-            {
-                await conn.ExecuteAsync(
-                    "[dbo].[InsertPhoto]",
-                    new { ProductId = postId, photo.PhotoUrl },
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            return postId;
-        }
-
-        public async Task<int> RemoveProductById(int productId)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            var parameters = new DynamicParameters();
-            parameters.Add("@ProductId", productId, DbType.Int32);
-            var rowsAffected = await conn.QuerySingleAsync<int>(
-                "[dbo].[RemoveProductById]",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
-
-            return rowsAffected;
-        }
-        public async Task<int> RevertProductById(int productId)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            var parameters = new DynamicParameters();
-            parameters.Add("@ProductId", productId, DbType.Int32);
-            var rowsAffected = await conn.QuerySingleAsync<int>(
-                "[dbo].[RevertProductById]",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
-
-            return rowsAffected;
-        }
-
-        public async Task<DateTime> deletePhoto(int photoId)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            await conn.OpenAsync();
-            var photoDeleted = await conn.ExecuteScalarAsync<DateTime>(
-                "[dbo].[DeletePhoto]",
-                new
-                {
-                    PhotoId = photoId,
-                },
-                commandType: CommandType.StoredProcedure
-            );
-            return photoDeleted;
-        }
         public async Task<List<ProductTypes>> GetProductTypes()
         {
             using var conn = new SqlConnection(_connectionString);
@@ -580,7 +393,10 @@ namespace marusa_line.services
                     ProductQuantity = order.ProductQuantity,
                     DeliveryType = order.DeliveryType,
                     Comment = order.Comment,
-                    FinalPrice = order.FinalPrice
+                    FinalPrice = order.FinalPrice,
+                    lng = order.lng,
+                    lat = order.lat,
+                    address = order.address,
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -641,18 +457,15 @@ namespace marusa_line.services
             return parameters.Get<int>("ReturnVal");
         }
 
-        public async Task<int> GetLikeCount()
+        public async Task FollowShop(int userId, int shopId)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
-            var count = await conn.QuerySingleAsync<int>(
-                "[dbo].[GetLikesCount]",
+            await conn.ExecuteAsync(
+                "[dbo].[FollowShop]",
+                param: new { UserId = userId, ShopId = shopId },
                 commandType: CommandType.StoredProcedure
             );
-
-            return count;
         }
-
-   
     }
 }

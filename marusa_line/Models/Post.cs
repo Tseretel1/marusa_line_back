@@ -12,6 +12,12 @@
         public bool IsLiked { get; set; }
         public int quantity { get; set; }
         public string dateDeleted { get; set; }
+        public int TotalActiveProducts { get; set; }
+        public int TotalDeletedProducts { get; set; }
+        public string? photoUrl { get; set; }
+        public int totalCount { get; set; }
+        public bool OrderNotAllowed { get; set; }
+
         public List<Photos> Photos { get; set; } = new List<Photos>();
     }
 }
