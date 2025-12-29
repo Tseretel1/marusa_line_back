@@ -587,7 +587,10 @@ namespace marusa_line.services
                     Subscription = shop.Subscription,
                     Instagram = shop.Instagram,
                     Facebook = shop.Facebook,
-                    Titkok = shop.Titkok
+                    Titkok = shop.Titkok,
+                    BOG = shop.BOG,
+                    TBC = shop.TBC,
+                    Receiver = shop.Receiver,
                 },
                 commandType: CommandType.StoredProcedure
             );
