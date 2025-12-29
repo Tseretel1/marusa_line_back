@@ -423,6 +423,19 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("get-shop-followers")]
+        public async Task<IActionResult> GetFollowersList(GetUserFilteredDto dto)
+        {
+            try
+            {
+                var users = await _controlPanelService.GetShopFollowersList(dto);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet("get-user-by-id")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -548,6 +561,20 @@ namespace marusa_line.Controllers
             {
                 var user = await _controlPanelService.UpdateShopAsync(shop);
                 return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("block-user")]
+        public async Task<IActionResult> FollowShop(int userId, int shopId)
+        {
+            try
+            {
+                var posts = await _controlPanelService.BlockUser(userId, shopId);
+                return Ok(posts);
             }
             catch (Exception ex)
             {

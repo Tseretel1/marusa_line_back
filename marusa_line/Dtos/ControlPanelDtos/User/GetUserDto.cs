@@ -12,5 +12,11 @@
         public int PaidOrdersCount { get; set; }
         public int UnPaidOrdersCount { get; set; }
         public int totalCount { get; set; }
+
+        public bool? IsBlocked { get; set; }
+
+        public int? TotalFollowers { get; set; }
+        public int? BlockedFollowers { get; set; }
+        public int? NonBlockedFollowers { get; set; }
     }
 }

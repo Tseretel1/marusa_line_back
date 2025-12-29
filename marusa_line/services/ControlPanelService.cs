@@ -519,6 +519,28 @@ namespace marusa_line.services
             return users;
         }
 
+        public async Task<List<GetUserDto>> GetShopFollowersList(GetUserFilteredDto dto)
+        { 
+            using var conn = new SqlConnection(_connectionString);
+
+            using var multi = await conn.QueryMultipleAsync(
+                "[dbo].[GetShopFollowersList]",
+                new
+                {
+                    ShopId = dto.ShopId,
+                    UserId = dto.UserId,
+                    IsBlocked = dto.IsBlocked,
+                    PageNumber = dto.PageNumber,
+                    PageSize = dto.PageSize
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            var users = (await multi.ReadAsync<GetUserDto>()).ToList();
+            return users;
+        }
+
+
         public async Task<int> UpdateProductOderAllowed(int productID, bool allowed)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -596,6 +618,16 @@ namespace marusa_line.services
             );
 
             return result;
+        }
+        public async Task <int>BlockUser(int userId, int shopId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.ExecuteAsync(
+                "[dbo].[BlockUserFromShop]",
+                new { ShopId = shopId, UserId = userId },
+                commandType: CommandType.StoredProcedure
+            );
+            return 1;
         }
     }
 }

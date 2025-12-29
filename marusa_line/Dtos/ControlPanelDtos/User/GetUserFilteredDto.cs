@@ -2,6 +2,7 @@
 {
     public class GetUserFilteredDto
     {
+        public int ShopId { get; set; }
         public int? UserId { get; set; }       
         public bool? IsBlocked { get; set; }    
         public int PageNumber { get; set; } = 1;
