@@ -4,6 +4,7 @@ using marusa_line.Dtos.ControlPanelDtos.Dashboard;
 using marusa_line.Dtos.ControlPanelDtos.ShopDtos;
 using marusa_line.Dtos.ControlPanelDtos.User;
 using marusa_line.interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace marusa_line.Controllers
@@ -20,14 +21,46 @@ namespace marusa_line.Controllers
             _controlPanelService = controlPanelService;
         }
 
+        [HttpGet("login-to-shop")]
+        public async Task<IActionResult> GetPostsForAdminPanel(string gmail, string password)
+        {
+            try
+            {
+                var token = await _controlPanelService.AuthorizeShopAsync(gmail,password);
+                if (token == null || !token.Any())
+                {
+                    var notSucceded = new
+                    {
+                        succeeded = false,
+                        token = "",
+                    };
+                    return Ok(notSucceded);
+                }
+                var Succeeded = new
+                {
+                    succeeded = true,
+                    token = token,
+                };
+                return Ok(Succeeded);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Authorize]
         [HttpPost("get-products")]
         public async Task<IActionResult> GetPostsForAdminPanel(GetPostsDto getPosts)
         {
-
             try
             {
-                var posts = await _controlPanelService.GetPostsForAdminPanel(getPosts);
-
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                {
+                    return Unauthorized("ShopId missing in token");
+                }
+                int shopId = int.Parse(shopIdClaim);
+                var posts = await _controlPanelService.GetPostsForAdminPanel(getPosts, shopId);
                 if (posts == null || !posts.Any())
                 {
                     return Ok();
@@ -40,7 +73,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize]
         [HttpGet("get-post-byid-controlpanel")]
         public async Task<IActionResult> GetPostByIdControlPanel(int id, int? userid)
         {
@@ -61,12 +94,19 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("add-post")]
         public async Task<IActionResult> InsertPostAsync([FromBody] InsertPostDto dto)
         {
             try
             {
-                var posts = await _controlPanelService.InsertPostAsync(dto);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                {
+                    return Unauthorized("ShopId missing in token");
+                }
+                int shopId = int.Parse(shopIdClaim);
+                var posts = await _controlPanelService.InsertPostAsync(dto,shopId);
                 return Ok(posts);
             }
             catch (Exception ex)
@@ -74,6 +114,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("edit-post")]
         public async Task<IActionResult> EditPostAsync([FromBody] InsertPostDto dto)
         {
@@ -87,6 +128,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("remove-post")]
         public async Task<IActionResult> RemovePost(int postid)
         {
@@ -100,6 +142,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("revert-post")]
         public async Task<IActionResult> RevertPost(int postid)
         {
@@ -113,6 +156,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("delete-photo")]
         public async Task<IActionResult> deletePhoto(int photoId)
         {
@@ -127,6 +171,7 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("get-like-count")]
         public async Task<IActionResult> GetLikeCount()
         {
@@ -141,13 +186,18 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("get-orders")]
         public async Task<IActionResult> GetOrdersControlPanel(GetOrdersControlPanelDto dto)
         {
             try
             {
-                var orders = await _controlPanelService.GetOrdersControlPanel(dto);
-                var totalCount = await _controlPanelService.GetOrdersTotalCountAsync(dto.IsPaid);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var orders = await _controlPanelService.GetOrdersControlPanel(dto, shopId);
+                var totalCount = await _controlPanelService.GetOrdersTotalCountAsync(dto.IsPaid, shopId);
 
                 if (orders == null || !orders.Any())
                 {
@@ -165,12 +215,17 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("get-statistics")]
         public async Task<IActionResult> GetStatistics(GetDahsboard dto)
         {
             try
             {
-                var statistics = await _controlPanelService.GetDashboardStatistics(dto);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var statistics = await _controlPanelService.GetDashboardStatistics(shopId,dto);
                 if (statistics == null)
                 {
                     return Ok(null);
@@ -222,13 +277,17 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpGet("get-order-details")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
-
             try
             {
-                var orders = await _postService.GetOrderById(orderId);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var orders = await _controlPanelService.GetOrderById(shopId,orderId);
 
                 if (orders == null)
                 {
@@ -308,35 +367,22 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(ControlPanelLoginDto dto)
-        {
-
-            try
-            {
-                var token = await _controlPanelService.Login(dto);
-
-                if (token == null)
-                {
-                    return Ok(null);
-                }
-                return Ok(token);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        [Authorize]
         [HttpGet("get-product-types")]
         public async Task<IActionResult> GetProductTypes()
         {
             try
             {
-                var posts = await _postService.GetProductTypes();
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+
+                var posts = await _postService.GetProductTypes(shopId);
 
                 if (posts == null || !posts.Any())
                 {
-                    return NotFound();
+                    return Ok();
                 }
 
                 return Ok(posts);
@@ -347,12 +393,18 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("insert-product-type")]
         public async Task<IActionResult> InsertProductType(string productType)
         {
             try
             {
-                var productTypes = await _controlPanelService.InsertProducType(productType);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+
+                var productTypes = await _controlPanelService.InsertProducType(shopId,productType);
                 if (productTypes == null)
                 {
                     return Ok(null);
@@ -368,12 +420,18 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("edit-product-type")]
         public async Task<IActionResult> EditProductType(int id, string productType)
         {
             try
             {
-                var productTypes = await _controlPanelService.EditProductType(id,productType);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+
+                var productTypes = await _controlPanelService.EditProductType(shopId,id,productType);
                 if (productTypes == null)
                 {
                     return Ok(null);
@@ -389,12 +447,18 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpDelete("delete-product-type")]
         public async Task<IActionResult> DeleteProductType(int id)
         {
             try
             {
-                var productTypes = await _controlPanelService.DeleteProductType(id);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+
+                var productTypes = await _controlPanelService.DeleteProductType(shopId,id);
                 if (productTypes == null)
                 {
                     return Ok(null);
@@ -512,6 +576,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPut("update-product-order-allowed")]
         public async Task<IActionResult> UpdateProductOderAllowed(int productID, bool allowed)
         {
@@ -525,12 +590,16 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize]
         [HttpGet("get-shop-stats")]
-        public async Task<IActionResult> UpdateProductOderAllowed(int shopId)
+        public async Task<IActionResult> UpdateProductOderAllowed()
         {
             try
             {
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
                 var user = await _controlPanelService.GetShopStats(shopId);
                 return Ok(user);
             }
@@ -539,12 +608,16 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize]
         [HttpGet("get-shop-by-id")]
-        public async Task<IActionResult> GetShopbyId(int shopId)
+        public async Task<IActionResult> GetShopbyId()
         {
             try
             {
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
                 var user = await _controlPanelService.GetShopById(shopId);
                 return Ok(user);
             }
@@ -554,12 +627,18 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("update-shop")]
         public async Task<IActionResult> UpdateShop([FromBody] ShopDto shop)
         {
             try
             {
-                var user = await _controlPanelService.UpdateShopAsync(shop);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+
+                var user = await _controlPanelService.UpdateShopAsync(shop,shopId);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -568,6 +647,7 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("block-user")]
         public async Task<IActionResult> FollowShop(int userId, int shopId)
         {

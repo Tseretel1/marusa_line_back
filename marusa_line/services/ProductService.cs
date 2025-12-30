@@ -6,6 +6,8 @@ using System.Data;
 using Dapper;
 using Microsoft.IdentityModel.Tokens;
 using marusa_line.Dtos;
+using marusa_line.Dtos.ControlPanelDtos.NewFolder;
+using marusa_line.Dtos.ControlPanelDtos.ShopDtos;
 
 namespace marusa_line.services
 {
@@ -133,7 +135,10 @@ namespace marusa_line.services
                     order.user = user;
                     return order;
                 },
-                new { OrderId = orderId },
+                new 
+                {
+                    OrderId = orderId 
+                },
                 splitOn: "UserId",
                 commandType: CommandType.StoredProcedure
             );
@@ -354,13 +359,17 @@ namespace marusa_line.services
             return isLiked;
         }
 
-        public async Task<List<ProductTypes>> GetProductTypes()
+        public async Task<List<ProductTypes>> GetProductTypes(int id)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             var result = await conn.QueryAsync<ProductTypes>(
                 "[dbo].[GetProductTypes]",
+                  new
+                  {
+                      ShopId = id,
+                  },
                 commandType: CommandType.StoredProcedure
             );
 
@@ -388,6 +397,7 @@ namespace marusa_line.services
                 "[dbo].[InsertOrder]",
                 new
                 {
+                    ShopId = order.ShopId,
                     UserId = order.UserId,
                     ProductId = order.ProductId,
                     ProductQuantity = order.ProductQuantity,
@@ -464,6 +474,27 @@ namespace marusa_line.services
             await conn.ExecuteAsync(
                 "[dbo].[FollowShop]",
                 param: new { UserId = userId, ShopId = shopId },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+        public async Task<ShopStatsDto> GetShopStats(int shopId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+
+            return await conn.QuerySingleAsync<ShopStatsDto>(
+                "[dbo].[spGetShopStats]",
+                new { ShopId = shopId },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<ShopDto?> GetShopById(int shopId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+
+            return await conn.QuerySingleOrDefaultAsync<ShopDto>(
+                "[dbo].[spGetShopById]",
+                new { ShopId = shopId },
                 commandType: CommandType.StoredProcedure
             );
         }

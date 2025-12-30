@@ -2,6 +2,7 @@
 {
     public class InsertOrder
     {
+        public int ShopId { get; set; }
         public int UserId { get; set; }
         public int ProductId { get; set; }
         public int ProductQuantity { get; set; }

@@ -146,11 +146,11 @@ namespace marusa_line.Controllers
         }
 
         [HttpGet("get-product-types")]
-        public async Task<IActionResult> GetProductTypes()
+        public async Task<IActionResult> GetProductTypes(int shopid)
         {
             try
             {
-                var posts = await _postService.GetProductTypes();
+                var posts = await _postService.GetProductTypes(shopid);
 
                 if (posts == null || !posts.Any())
                 {
@@ -324,6 +324,33 @@ namespace marusa_line.Controllers
             {
                 await _postService.FollowShop(userId, shopId);
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get-shop-stats")]
+        public async Task<IActionResult> UpdateProductOderAllowed(int shopId)
+        {
+            try
+            {
+                var user = await _postService.GetShopStats(shopId);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("get-shop-by-id")]
+        public async Task<IActionResult> GetShopbyId(int shopId)
+        {
+            try
+            {
+                var user = await _postService.GetShopById(shopId);
+                return Ok(user);
             }
             catch (Exception ex)
             {

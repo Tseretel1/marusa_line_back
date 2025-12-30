@@ -28,7 +28,50 @@ namespace marusa_line.services
             _connectionString = config.GetConnectionString("marusa_line_connection");
         }
 
-        public async Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order)
+        public async Task<string?> AuthorizeShopAsync(string gmail, string password)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var shop = await conn.QuerySingleOrDefaultAsync<ShopDto>(
+                "[dbo].[spAuthorizeShop]",
+                new
+                {
+                    Gmail = gmail,
+                    Password = password
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            if (shop == null)
+                return null;
+
+            return CreateJwtForShop(shop);
+        }
+        private string CreateJwtForShop(ShopDto shop)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Appsettings:Token"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+         
+            var claims = new List<Claim>
+            {
+                new Claim("ShopId", shop.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, shop.Gmail),
+
+                new Claim("Subscription", shop.Subscription),
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order,int shopid)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -51,11 +94,11 @@ namespace marusa_line.services
                     {
                         existingOrder.Photos.Add(photo);
                     }
-
                     return existingOrder;
                 },
                 param: new
                 {
+                    ShopId = shopid,
                     UserId = order.UserId,
                     IsPaid = order.IsPaid,
                     OrderId = order.OrderId,
@@ -69,7 +112,7 @@ namespace marusa_line.services
             return lookup.Values.ToList();
         }
 
-        public async Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts)
+        public async Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts, int shopid)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -78,6 +121,7 @@ namespace marusa_line.services
                 "[dbo].[GetProductsForControlPanel]",
                 new
                 {
+                    ShopId = shopid,
                     ProductTypeId = getPosts.ProductTypeId,
                     IsDeleted = getPosts.IsDeleted,
                     PageNumber = getPosts.PageNumber,
@@ -125,12 +169,13 @@ namespace marusa_line.services
 
             return rowsAffected;
         }
-        public async Task<int> GetOrdersTotalCountAsync(bool? isPaid)
+        public async Task<int> GetOrdersTotalCountAsync(bool? isPaid, int shopId)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             var parameters = new DynamicParameters();
+            parameters.Add("@ShopId", shopId, DbType.Int32);
             parameters.Add("@Paid", isPaid, DbType.Boolean);
 
             var totalCount = await conn.QuerySingleAsync<int>(
@@ -157,40 +202,28 @@ namespace marusa_line.services
 
             return rowsAffected;
         }
-
-        public async Task<ControlPanelLoginReturn> Login(ControlPanelLoginDto loginDto)
+        public async Task<OrderDetailsDto?> GetOrderById(int shopId, int orderId)
         {
-            if(loginDto.Username =="giorgi"&& loginDto.Password == "giorgi")
-            {
-                var jwtToken = CreateJwtForUser(loginDto.Username);
-                var ControlPanelReturn = new ControlPanelLoginReturn
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var result = await conn.QueryAsync<OrderDetailsDto, User, OrderDetailsDto>(
+                "[dbo].[GetOrderByIdControlPanel]",
+                (order, user) =>
                 {
-                    Token = jwtToken,
-                };
-                return ControlPanelReturn;
-            }
-            return null;
-        }
-
-
-        private string CreateJwtForUser(string username)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claims = new List<Claim>
-            {
-                new Claim("username", username),
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: creds
+                    order.user = user;
+                    return order;
+                },
+                new
+                {
+                    ShopId = shopId,
+                    OrderId = orderId
+                },
+                splitOn: "UserId",
+                commandType: CommandType.StoredProcedure
             );
-            return new JwtSecurityTokenHandler().WriteToken(token);
+
+            return result.FirstOrDefault();
         }
 
         public async Task<Post?> GetPostWithIdControlPanel(int id, int? userId = null)
@@ -228,7 +261,7 @@ namespace marusa_line.services
             );
             return lookup.Values.FirstOrDefault();
         }
-        public async Task<int> InsertPostAsync(InsertPostDto dto)
+        public async Task<int> InsertPostAsync(InsertPostDto dto, int ShopId)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -236,6 +269,7 @@ namespace marusa_line.services
                 "[dbo].[InsertProduct]",
                 new
                 {
+                    ShopId,
                     dto.Title,
                     dto.Description,
                     dto.Price,
@@ -343,7 +377,7 @@ namespace marusa_line.services
             return count;
         }
 
-        public async Task<DashboardStats> GetDashboardStatistics(GetDahsboard stats)
+        public async Task<DashboardStats> GetDashboardStatistics(int shopid,GetDahsboard stats)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -352,6 +386,7 @@ namespace marusa_line.services
                 "[dbo].[GetOrderStatistics]",
                 new
                 {
+                    ShopId = shopid,
                     StartDate = stats.StartDate,
                     EndDate = stats.EndDate
                 },
@@ -401,7 +436,7 @@ namespace marusa_line.services
         }
   
 
-        public async Task<List<ProductTypes>> InsertProducType(string productType)
+        public async Task<List<ProductTypes>> InsertProducType(int shopId, string productType)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -410,6 +445,7 @@ namespace marusa_line.services
                 "[dbo].[AddProductType]",
                 new
                 {
+                    ShopId = shopId,
                     productType = productType,
                 },
                 commandType: CommandType.StoredProcedure
@@ -417,7 +453,7 @@ namespace marusa_line.services
             return result.ToList();
         }
 
-        public async Task<List<ProductTypes>> EditProductType(int id, string productType)
+        public async Task<List<ProductTypes>> EditProductType(int  shopId,int id, string productType)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -426,6 +462,7 @@ namespace marusa_line.services
                 "[dbo].[EditProductType]",
                 new
                 {
+                    ShopId= shopId,
                     Id = id,
                     productType = productType,
                 },
@@ -433,7 +470,7 @@ namespace marusa_line.services
             );
             return result.ToList();
         }
-        public async Task<List<ProductTypes>> DeleteProductType(int id)
+        public async Task<List<ProductTypes>> DeleteProductType(int shopId,int id)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -442,6 +479,7 @@ namespace marusa_line.services
                 "[dbo].[DeleteProductType]",
                 new
                 {
+                    ShopId = shopId,
                     Id = id,
                 },
                 commandType: CommandType.StoredProcedure
@@ -593,7 +631,7 @@ namespace marusa_line.services
                 commandType: CommandType.StoredProcedure
             );
         }
-        public async Task<bool> UpdateShopAsync(ShopDto shop)
+        public async Task<bool> UpdateShopAsync(ShopDto shop,int shopid)
         {
             using var conn = new SqlConnection(_connectionString);
 
@@ -601,7 +639,7 @@ namespace marusa_line.services
                 "[dbo].[spUpdateShop]",
                 new
                 {
-                    ShopId = shop.Id,
+                    ShopId = shopid,
                     Name = shop.Name,
                     Logo = shop.Logo,
                     Location = shop.Location,

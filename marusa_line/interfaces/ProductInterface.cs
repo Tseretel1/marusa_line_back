@@ -1,6 +1,8 @@
 ﻿using marusa_line.Models;
 using marusa_line.Dtos;
 using marusa_line.Dtos.ControlPanelDtos;
+using marusa_line.Dtos.ControlPanelDtos.NewFolder;
+using marusa_line.Dtos.ControlPanelDtos.ShopDtos;
 
 namespace marusa_line.interfaces
 {
@@ -17,7 +19,7 @@ namespace marusa_line.interfaces
         Task<Post> GetPostWithId(int id, int? userid);
         Task<Post?> GetOrderProduct(int id, int? userId = null);
 
-        Task<List<ProductTypes>> GetProductTypes();
+        Task<List<ProductTypes>> GetProductTypes(int id);
         Task<List<OrderStatuses>> GetOrderStatuses();
         Task<int> InsertOrderAsync(InsertOrder order);
 
@@ -25,5 +27,7 @@ namespace marusa_line.interfaces
         Task<int> InsertLocation(int userId, string location);
         Task<int> InsertPhoneNumber(int userId, string phoneNumber);
         Task FollowShop(int userId, int shopId);
+        Task<ShopStatsDto> GetShopStats(int shopId);
+        Task<ShopDto> GetShopById(int shopId);
     }
 }

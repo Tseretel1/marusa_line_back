@@ -11,26 +11,27 @@ namespace marusa_line.interfaces
 {
     public interface ControlPanelInterface
     {
-        Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order);
-        Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts);
+        Task<string?> AuthorizeShopAsync(string gmail, string password);
+        Task<List<OrderControlPanel>> GetOrdersControlPanel(GetOrdersControlPanelDto order, int shopid);
+        Task<List<Post>> GetPostsForAdminPanel(GetPostsDto getPosts,int shopid);
         Task<int> ToggleOrderIsPaidAsync(int orderId,bool isPaid, int quantity);
         Task<int> ChangeOrderStatus(int orderId, int isPaid);
+        Task<OrderDetailsDto> GetOrderById(int shopId, int userId);
         Task<int> DeleteOrder(int orderId);
-        Task<int> GetOrdersTotalCountAsync(bool? isPaid);
-        Task<ControlPanelLoginReturn> Login (ControlPanelLoginDto loginDto);
+        Task<int> GetOrdersTotalCountAsync(bool? isPaid,int shopId);
         Task<Post?> GetPostWithIdControlPanel(int id, int? userId = null);
-        Task<int> InsertPostAsync(InsertPostDto dto);
+        Task<int> InsertPostAsync(InsertPostDto dto,int shopid);
         Task<int> EditPostAsync(InsertPostDto dto);
         Task<int> RemoveProductById(int postId);
         Task<int> RevertProductById(int postId);
         Task<DateTime> deletePhoto(int photoId);
         Task<int> GetLikeCount();
-        Task<DashboardStats> GetDashboardStatistics(GetDahsboard stats);
+        Task<DashboardStats> GetDashboardStatistics(int shopid, GetDahsboard stats);
         Task<DashboardStatsByYear> GetDashboard(int year);
         Task<List<SoldProductTypes>> GetSoldProductTypes(int year,int? month);
-        Task<List<ProductTypes>> InsertProducType(string productType);
-        Task<List<ProductTypes>> EditProductType(int id,string productType);
-        Task<List<ProductTypes>> DeleteProductType(int id);
+        Task<List<ProductTypes>> InsertProducType(int shopId, string productType);
+        Task<List<ProductTypes>> EditProductType(int shopId,int id,string productType);
+        Task<List<ProductTypes>> DeleteProductType(int shopId,int id);
         Task<GetUserDto> GetUser(int id);
         Task<List<GetUserDto>>SearchUserByName(string search);
         Task<List<GetUserDto>> SearchUserByEmail(string search);
@@ -41,7 +42,7 @@ namespace marusa_line.interfaces
         Task<List<GetUserDto>> GetShopFollowersList(GetUserFilteredDto dto);
         Task<ShopStatsDto> GetShopStats(int shopId);
         Task<ShopDto?> GetShopById(int shopId);
-        Task<bool> UpdateShopAsync(ShopDto shop);
+        Task<bool> UpdateShopAsync(ShopDto shop,int shopId);
         Task<int> BlockUser(int userId, int shopId);
     }
 }
