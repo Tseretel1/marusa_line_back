@@ -27,19 +27,19 @@ namespace marusa_line.interfaces
         Task<DateTime> deletePhoto(int photoId);
         Task<int> GetLikeCount();
         Task<DashboardStats> GetDashboardStatistics(int shopid, GetDahsboard stats);
-        Task<DashboardStatsByYear> GetDashboard(int year);
-        Task<List<SoldProductTypes>> GetSoldProductTypes(int year,int? month);
+        Task<DashboardStatsByYear> GetDashboard(int shopid, int year);
+        Task<List<SoldProductTypes>> GetSoldProductTypes(int shopid, int year,int? month);
         Task<List<ProductTypes>> InsertProducType(int shopId, string productType);
         Task<List<ProductTypes>> EditProductType(int shopId,int id,string productType);
         Task<List<ProductTypes>> DeleteProductType(int shopId,int id);
         Task<GetUserDto> GetUser(int id);
-        Task<List<GetUserDto>>SearchUserByName(string search);
+        Task<List<GetUserDto>>SearchUserByName(int shopId, string search);
         Task<List<GetUserDto>> SearchUserByEmail(string search);
 
         Task<int> UpdateUserRole(int userId, string role);
         Task<int> UpdateProductOderAllowed(int productID, bool allowed);
         Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto);
-        Task<List<GetUserDto>> GetShopFollowersList(GetUserFilteredDto dto);
+        Task<List<GetUserDto>> GetShopFollowersList(int shopId, GetUserFilteredDto dto);
         Task<ShopStatsDto> GetShopStats(int shopId);
         Task<ShopDto?> GetShopById(int shopId);
         Task<bool> UpdateShopAsync(ShopDto shop,int shopId);

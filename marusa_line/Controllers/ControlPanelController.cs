@@ -241,12 +241,17 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpGet("get-dashboard-by-year")]
         public async Task<IActionResult> GetDashboard(int year)
         {
             try
             {
-                var statistics = await _controlPanelService.GetDashboard(year);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var statistics = await _controlPanelService.GetDashboard(shopId,year);
                 if (statistics == null)
                 {
                     return Ok(null);
@@ -259,12 +264,17 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpGet("get-sold-producttypes")]
         public async Task<IActionResult> GetSoldProductTypes(int year, int? month)
         {
             try
             {
-                var statistics = await _controlPanelService.GetSoldProductTypes(year,month);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var statistics = await _controlPanelService.GetSoldProductTypes(shopId,year, month);
                 if (statistics == null)
                 {
                     return Ok(null);
@@ -492,7 +502,11 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var users = await _controlPanelService.GetShopFollowersList(dto);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var users = await _controlPanelService.GetShopFollowersList(shopId, dto);
                 return Ok(users);
             }
             catch (Exception ex)
@@ -519,13 +533,17 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize]
         [HttpGet("get-user-by-name")]
         public async Task<IActionResult> GetsuerByName(string search)
         {
             try
             {
-                var statistics = await _controlPanelService.SearchUserByName(search);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var statistics = await _controlPanelService.SearchUserByName(shopId,search);
                 if (statistics == null)
                 {
                     return Ok(null);

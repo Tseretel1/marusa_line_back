@@ -394,20 +394,28 @@ namespace marusa_line.services
             );
             return result;
         }
-        public async Task<DashboardStatsByYear> GetDashboard(int year)
+        public async Task<DashboardStatsByYear> GetDashboard(int shopid,int year)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             var statsByMonth = (await conn.QueryAsync<DashboardStatsByMonths>(
                 "[dbo].[spGetMonthlyOrderStats]",
-                new { Year = year },
+                new 
+                { 
+                    ShopId=shopid,
+                    Year = year
+                },
                 commandType: CommandType.StoredProcedure
             )).ToList();
 
             var YearStat = await conn.QuerySingleAsync<DashboardYearSum>(
                 "[dbo].[spGetYearlyOrderStats]",
-                new { Year = year },
+                new 
+                {
+                    ShopId = shopid,
+                    Year = year 
+                },
                 commandType: CommandType.StoredProcedure
             );
 
@@ -418,7 +426,7 @@ namespace marusa_line.services
             };
         }
 
-        public async Task<List<SoldProductTypes>> GetSoldProductTypes(int year, int? month)
+        public async Task<List<SoldProductTypes>> GetSoldProductTypes(int shopid,int year, int? month)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -427,6 +435,7 @@ namespace marusa_line.services
                 "[dbo].[spGetProductTypeSalesStats]",
                 new
                 {
+                    ShopId = shopid,
                     Year = year,
                     Month= month
                 },
@@ -502,7 +511,7 @@ namespace marusa_line.services
             );
             return result;
         }
-        public async Task<List<GetUserDto>> SearchUserByName(string search)
+        public async Task<List<GetUserDto>> SearchUserByName(int shopId,string search)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -511,6 +520,7 @@ namespace marusa_line.services
                 "[dbo].[spSearchUsersByName]",
                 new
                 {
+                    ShopId= shopId,
                     SearchText = search,
                 },
                 commandType: CommandType.StoredProcedure
@@ -557,7 +567,7 @@ namespace marusa_line.services
             return users;
         }
 
-        public async Task<List<GetUserDto>> GetShopFollowersList(GetUserFilteredDto dto)
+        public async Task<List<GetUserDto>> GetShopFollowersList(int shopId, GetUserFilteredDto dto)
         { 
             using var conn = new SqlConnection(_connectionString);
 
@@ -565,7 +575,7 @@ namespace marusa_line.services
                 "[dbo].[GetShopFollowersList]",
                 new
                 {
-                    ShopId = dto.ShopId,
+                    ShopId = shopId,
                     UserId = dto.UserId,
                     IsBlocked = dto.IsBlocked,
                     PageNumber = dto.PageNumber,
