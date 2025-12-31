@@ -397,7 +397,6 @@ namespace marusa_line.services
                 "[dbo].[InsertOrder]",
                 new
                 {
-                    ShopId = order.ShopId,
                     UserId = order.UserId,
                     ProductId = order.ProductId,
                     ProductQuantity = order.ProductQuantity,

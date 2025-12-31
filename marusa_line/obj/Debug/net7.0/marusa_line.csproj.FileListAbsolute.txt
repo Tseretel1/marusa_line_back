@@ -214,3 +214,5 @@ C:\Users\user\Documents\GitHub\marusa_line_back\marusa_line\obj\Debug\net7.0\mar
 C:\Users\user\Documents\GitHub\marusa_line_back\marusa_line\obj\Debug\net7.0\ref\marusa_line.dll
 C:\Users\g.tsereteli\Desktop\marusa_line_back\marusa_line\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\g.tsereteli\Desktop\marusa_line_back\marusa_line\bin\Debug\net7.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\user\Documents\GitHub\marusa_line_back\marusa_line\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\user\Documents\GitHub\marusa_line_back\marusa_line\bin\Debug\net7.0\Microsoft.IdentityModel.Abstractions.dll
