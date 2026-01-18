@@ -487,15 +487,39 @@ namespace marusa_line.services
             );
         }
 
-        public async Task<ShopDto?> GetShopById(int shopId)
+        public async Task<ShopDtoMatch> GetShopById(int shopId, int? userid)
         {
             using var conn = new SqlConnection(_connectionString);
 
-            return await conn.QuerySingleOrDefaultAsync<ShopDto>(
+            var shop = await conn.QuerySingleOrDefaultAsync<ShopDto>(
                 "[dbo].[spGetShopById]",
                 new { ShopId = shopId },
                 commandType: CommandType.StoredProcedure
             );
+
+            if (shop == null)
+                return null;
+
+            bool isFollowed = false;
+
+            if (userid != null)
+            {
+                isFollowed = await conn.QuerySingleAsync<bool>(
+                    "[dbo].[IsShopFollowed]",
+                    new
+                    {
+                        ShopId = shopId,
+                        UserId = userid.Value
+                    },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+
+            return new ShopDtoMatch
+            {
+                shop = shop,
+                isFollowed = isFollowed
+            };
         }
     }
 }

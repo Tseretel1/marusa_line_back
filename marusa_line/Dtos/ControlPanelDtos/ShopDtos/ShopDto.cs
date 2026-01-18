@@ -15,4 +15,10 @@
          public string? TBC{ get; set; }
          public string? Receiver { get; set; }
     }
+    public class ShopDtoMatch 
+    { 
+        public ShopDto shop { get; set; }
+       public bool isFollowed { get; set; }
+    }
+
 }

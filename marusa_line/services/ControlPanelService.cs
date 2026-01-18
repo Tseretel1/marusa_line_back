@@ -65,7 +65,7 @@ namespace marusa_line.services
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddDays(30),
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);

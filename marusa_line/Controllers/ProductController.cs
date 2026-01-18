@@ -345,12 +345,24 @@ namespace marusa_line.Controllers
             }
         }
         [HttpGet("get-shop-by-id")]
+        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> GetShopbyId(int shopId)
         {
             try
             {
-                var user = await _postService.GetShopById(shopId);
-                return Ok(user);
+                var shopIdClaim = User.FindFirst("UserId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                {
+                    var user = await _postService.GetShopById(shopId,null);
+                    return Ok(user);
+                }
+                else
+                {
+                    int userid = int.Parse(shopIdClaim);
+                    var user = await _postService.GetShopById(shopId,userid);
+                    return Ok(user);
+                }
             }
             catch (Exception ex)
             {

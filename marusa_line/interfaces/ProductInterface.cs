@@ -28,6 +28,6 @@ namespace marusa_line.interfaces
         Task<int> InsertPhoneNumber(int userId, string phoneNumber);
         Task FollowShop(int userId, int shopId);
         Task<ShopStatsDto> GetShopStats(int shopId);
-        Task<ShopDto> GetShopById(int shopId);
+        Task<ShopDtoMatch> GetShopById(int shopId, int? userid);
     }
 }

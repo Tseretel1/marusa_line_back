@@ -152,7 +152,7 @@ namespace marusa_line.services
 
         private string CreateJwtForUser(UserDto user)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Appsettings:Token"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
@@ -166,7 +166,7 @@ namespace marusa_line.services
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddDays(30),
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
