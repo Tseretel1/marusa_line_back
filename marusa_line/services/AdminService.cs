@@ -67,9 +67,9 @@ namespace marusa_line.services
                     Subscription = shop.Subscription,
                     Instagram = shop.Instagram,
                     Facebook = shop.Facebook,
-                    Titkok = shop.Titkok,
-                    BOG = shop.BOG,
-                    TBC = shop.TBC,
+                    Titkok = shop.Tiktok,
+                    BOG = shop.Bog,
+                    TBC = shop.Tbc,
                     Receiver = shop.Receiver,
                 },
                 commandType: CommandType.StoredProcedure

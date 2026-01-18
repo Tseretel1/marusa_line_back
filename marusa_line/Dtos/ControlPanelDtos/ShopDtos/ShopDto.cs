@@ -10,9 +10,9 @@
          public string? Subscription { get; set; }
          public string? Instagram { get; set; }
          public string? Facebook { get; set; }
-         public string? Titkok { get; set; }
-         public string? BOG { get; set; }
-         public string? TBC{ get; set; }
+         public string? Tiktok { get; set; }
+         public string? Bog { get; set; }
+         public string? Tbc{ get; set; }
          public string? Receiver { get; set; }
     }
     public class ShopDtoMatch 
