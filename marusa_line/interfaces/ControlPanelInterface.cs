@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using marusa_line.Dtos;
+using marusa_line.Dtos.AdminPanelDtos;
 using marusa_line.Dtos.ControlPanelDtos;
 using marusa_line.Dtos.ControlPanelDtos.Dashboard;
 using marusa_line.Dtos.ControlPanelDtos.NewFolder;
@@ -38,7 +39,7 @@ namespace marusa_line.interfaces
 
         Task<int> UpdateUserRole(int userId, string role);
         Task<int> UpdateProductOderAllowed(int productID, bool allowed);
-        Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto);
+        Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto,int shopId);
         Task<List<GetUserDto>> GetShopFollowersList(int shopId, GetUserFilteredDto dto);
         Task<ShopStatsDto> GetShopStats(int shopId);
         Task<ShopDto?> GetShopById(int shopId);

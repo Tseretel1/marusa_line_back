@@ -489,7 +489,11 @@ namespace marusa_line.Controllers
         {
             try
             {
-                var users = await _controlPanelService.GetUsersList(dto);
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+                var users = await _controlPanelService.GetUsersList(dto, shopId);
                 return Ok(users);
             }
             catch (Exception ex)
@@ -667,10 +671,15 @@ namespace marusa_line.Controllers
 
         [Authorize]
         [HttpPost("block-user")]
-        public async Task<IActionResult> FollowShop(int userId, int shopId)
+        public async Task<IActionResult> FollowShop(int userId)
         {
             try
             {
+                var shopIdClaim = User.FindFirst("ShopId")?.Value;
+                if (string.IsNullOrEmpty(shopIdClaim))
+                    return Unauthorized("ShopId missing in token");
+                int shopId = int.Parse(shopIdClaim);
+
                 var posts = await _controlPanelService.BlockUser(userId, shopId);
                 return Ok(posts);
             }

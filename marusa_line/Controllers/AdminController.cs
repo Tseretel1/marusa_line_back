@@ -1,5 +1,6 @@
 ﻿using marusa_line.Dtos.AdminPanelDtos;
 using marusa_line.Dtos.ControlPanelDtos.ShopDtos;
+using marusa_line.Dtos.ControlPanelDtos.User;
 using marusa_line.interfaces;
 using marusa_line.services;
 using Microsoft.AspNetCore.Mvc;
@@ -105,6 +106,20 @@ namespace marusa_line.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("get-users")]
+        public async Task<IActionResult> GetUsers(Pagination dto)
+        {
+            try
+            {
+                var users = await _adminService.GetUsersList(dto);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return Ok();
             }
         }
     }

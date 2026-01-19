@@ -543,7 +543,7 @@ namespace marusa_line.services
             return result.ToList();
         }
 
-        public async Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto)
+        public async Task<List<GetUserDto>> GetUsersList(GetUserFilteredDto dto, int shopId)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -552,6 +552,8 @@ namespace marusa_line.services
                 "[dbo].[GetUsersList]",
                 new
                 {
+
+                    ShopId = shopId,
                     UserId = dto.UserId,
                     IsBlocked = dto.IsBlocked,
                     PageNumber = dto.PageNumber,

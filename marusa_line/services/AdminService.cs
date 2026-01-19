@@ -5,6 +5,7 @@ using System.Data;
 using Dapper;
 using marusa_line.Dtos.ControlPanelDtos.NewFolder;
 using marusa_line.Dtos.AdminPanelDtos;
+using marusa_line.Dtos.ControlPanelDtos.User;
 
 namespace marusa_line.services
 {
@@ -125,6 +126,29 @@ namespace marusa_line.services
             );
 
             return result;
+        }
+        public async Task<List<GetUserDto>> GetUsersList(Pagination dto)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            using var multi = await conn.QueryMultipleAsync(
+                "[dbo].[GetUsers]",
+                new
+                {
+                    UserName = dto.UserName,
+                    Gmail = dto.Gmail,
+                    PageNumber = dto.PageNumber,
+                    PageSize = dto.PageSize
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            var users = (await multi.ReadAsync<GetUserDto>()).ToList();
+            var totalCount = await multi.ReadFirstAsync<int>();
+            users[0].totalCount = totalCount;
+
+            return users;
         }
     }
 }
