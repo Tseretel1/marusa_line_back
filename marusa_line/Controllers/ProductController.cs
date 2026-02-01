@@ -39,8 +39,7 @@ namespace marusa_line.Controllers
             }
         }
 
-
-
+        [Authorize]
         [HttpGet("get-user-liked-posts")]
         public async Task<IActionResult> GetPosts(int userid)
         {
@@ -184,6 +183,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpGet("like-post")]
         public async Task<IActionResult> LikePost(int userid, int productid)
         {
@@ -202,6 +202,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("insert-order")]
         public async Task<IActionResult> insertOrder(InsertOrder order)
         {
@@ -215,6 +216,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpGet("get-user-orders")]
         public async Task<IActionResult> GetUserOrders(int userid)
         {
@@ -236,9 +238,7 @@ namespace marusa_line.Controllers
             }
         }
 
-
-
-
+        [Authorize]
         [HttpGet("get-order-details")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
@@ -290,6 +290,7 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("insert-phone")]
         public async Task<IActionResult> InsertPhoneNumber(int userId, string  phone)
         {
@@ -304,6 +305,7 @@ namespace marusa_line.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("insert-location")]
         public async Task<IActionResult> InsertLocation(int userId, string location)
         {
@@ -317,6 +319,7 @@ namespace marusa_line.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPost("follow-shop")]
         public async Task<IActionResult> FollowShop(int userId,int shopId)
         {
