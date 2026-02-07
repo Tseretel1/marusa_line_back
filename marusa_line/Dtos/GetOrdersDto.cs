@@ -31,6 +31,7 @@ namespace marusa_line.Dtos
 
     public class OrderDetailsDto
     {
+        public int ShopId { get; set; }
         public int OrderId { get; set; }
         public int UserId { get; set; }
         public int ProductId { get; set; }
@@ -45,6 +46,5 @@ namespace marusa_line.Dtos
         public string Lng { get; set; }
         public string Lat { get; set; }
         public string Address { get; set; }
-
     }
 }

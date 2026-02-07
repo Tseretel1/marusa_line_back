@@ -242,11 +242,9 @@ namespace marusa_line.Controllers
         [HttpGet("get-order-details")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
-
             try
             {
                 var orders= await _postService.GetOrderById(orderId);
-
                 if (orders== null)
                 {
                     return Ok(null);
