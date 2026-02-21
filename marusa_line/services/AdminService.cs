@@ -68,7 +68,7 @@ namespace marusa_line.services
                     Subscription = shop.Subscription,
                     Instagram = shop.Instagram,
                     Facebook = shop.Facebook,
-                    Titkok = shop.Tiktok,
+                    Tiktok = shop.Titkok,
                     BOG = shop.Bog,
                     TBC = shop.Tbc,
                     Receiver = shop.Receiver,
